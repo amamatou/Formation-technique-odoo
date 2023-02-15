@@ -3,11 +3,10 @@
     'name': "INSTANCE REQUEST",
 
     'summary': """
-        Short (1 phrase/line) summary of the module's purpose, used as
-        subtitle on modules listing or apps.openerp.com""",
+        Demande d'instance""",
 
     'description': """
-        Long description of module's purpose
+        Demande d'instance
     """,
 
     'author': "Mhao",
@@ -17,7 +16,7 @@
     # Check https://github.com/odoo/odoo/blob/16.0/odoo/addons/base/data/ir_module_category_data.xml
     # for the full list
     'category': 'Tools',
-    'version': '16.0.0',
+    'version': '16.0',
 
     # any module necessary for this one to work correctly
     'depends': ['base'],

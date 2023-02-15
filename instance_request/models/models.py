@@ -1,18 +1,24 @@
 # -*- coding: utf-8 -*-
 
-# from odoo import models, fields, api
+from odoo import models, fields, api
 
+class instance_request(models.Model):
+     _name = 'instance.request'
+     _description = 'Demande d\'instance'
 
-# class instance_request(models.Model):
-#     _name = 'instance_request.instance_request'
-#     _description = 'instance_request.instance_request'
+     name = fields.Char()
+     adress_ip = fields.Char()
+     active = fields.Boolean(default=True)
+     cpu = fields.Char()
+     ram = fields.Char()
+     disk = fields.Char()
+     url = fields.Char()
+     state = fields.Selection(['Brouillon', 'Soumise', 'En traitement', 'Traitee'],default='Brouillon')
+     limit_date = fields.Date('Date limite de traitement')
+     treat_date = fields.Datetime('Date de traitement')
+     treat_duration = fields.Float(string="Duree de traitement")
 
-#     name = fields.Char()
-#     value = fields.Integer()
-#     value2 = fields.Float(compute="_value_pc", store=True)
-#     description = fields.Text()
-#
-#     @api.depends('value')
-#     def _value_pc(self):
-#         for record in self:
-#             record.value2 = float(record.value) / 100
+     #@api.depends('value')
+     #def _value_pc(self):
+         #for record in self:
+             #record.value2 = float(record.value) / 100
