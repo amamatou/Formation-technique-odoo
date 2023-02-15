@@ -13,7 +13,12 @@ class instance_request(models.Model):
      ram = fields.Char()
      disk = fields.Char()
      url = fields.Char()
-     state = fields.Selection(['Brouillon', 'Soumise', 'En traitement', 'Traitee'],default='Brouillon')
+     state = fields.Selection([
+          ("brouillon","Brouillon"),
+          ("soumise", "Soumise"),
+          ("en_traitement", "En traitement"),
+          ("traitee","Traitee")
+     ],default='Brouillon')
      limit_date = fields.Date('Date limite de traitement')
      treat_date = fields.Datetime('Date de traitement')
      treat_duration = fields.Float(string="Duree de traitement")
