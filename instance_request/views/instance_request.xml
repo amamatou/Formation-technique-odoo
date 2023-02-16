@@ -1,12 +1,11 @@
 <odoo>
   <data>
-    <!-- explicit list view definition -->
-
-    <record model="ir.ui.view" id="instance_request.list">
+    <!-- search view -->
+    <record model="ir.ui.view" id="instance_request.search">
       <field name="name">Demande de création d'instance</field>
-      <field name="model">instance_request.instance_request</field>
+      <field name="model">instance.request</field>
       <field name="arch" type="xml">
-        <tree>
+        <search>
           <field name="name"/>
           <field name="adress_ip"/>
           <field name="active"/>
@@ -14,52 +13,113 @@
           <field name="ram"/>
           <field name="disk"/>
           <field name="url"/>
-          <field name="state"/>
           <field name="limit_date"/>
           <field name="treat_date"/>
           <field name="treat_duration"/>
+          <field name="state"/>
+        </search>
+      </field>
+    </record>
+
+    <!-- list view -->
+    <record model="ir.ui.view" id="instance_request.list">
+      <field name="name">Demande de création d'instance</field>
+      <field name="model">instance.request</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name"/>
+          <field name="create_uid"/>
+          <field name="cpu"/>
+          <field name="ram"/>
+          <field name="disk"/>
+          <field name="limit_date"/>
+          <field name="state"/>
+          <button string="Set to draft" type="object" name="action_draft" icon="fa-file"
+                  states="submitted,done"/>
+          <button string="Submit" type="object" name="action_submit" icon="fa-paper-plane" states="draft"/>
+          <button string="set to progress" type="object" name="action_progress" icon="fa-spinner" states="submitted"/>
+          <button string="Done" type="object" name="action_done" icon="fa-thumbs-up" states="in_process"/>
         </tree>
       </field>
     </record>
 
-    <!-- explicit form view definition -->
-
+    <!-- form view -->
     <record model="ir.ui.view" id="instance_request.form">
       <field name="name">Demande de création d'instance</field>
-      <field name="model">instance_request.instance_request</field>
+      <field name="model">instance.request</field>
       <field name="arch" type="xml">
-        <form string="idea form">
-          <group>
+        <form string="Idea form">
+          <header>
+            <button string="Set to draft" type="object" name="action_draft" class="oe_highlight"
+                    states="submitted,done"/>
+            <button string="Submit" type="object" name="action_submit" class="oe_highlight" states="draft"
+                    context="{'get_if_submit':'7'}"/>
+            <button string="set to progress" type="object" name="action_progress" class="oe_highlight"
+                    states="submitted"/>
+            <button string="Done" type="object" name="action_done" class="oe_highlight" states="in_process"/>
+            <field name="state" widget="statusbar" options="{'clickable': '1'}"/>
+          </header>
+          <sheet>
             <group>
-              <field name="name"/>
-              <field name="adress_ip"/>
-              <field name="active"/>
+              <group>
+                <field name="name" required="1" attrs="{'readonly':[('state','=','done')]}"/>
+              </group>
+              <group>
+                <field name="active" attrs="{'readonly':[('state','=','done')]}"/>
+              </group>
+              <group>
+                <field name="adress_ip" attrs="{'invisible':['|',('state','=','draft'),'|',('state','=','submitted'),('state','=','in_process')],
+                                                'readonly':[('state','=','done')]}"/>
+                <field name="url" attrs="{'readonly':[('state','=','done')]}"/>
+              </group>
+              <group>
+                <field name="cpu" attrs="{'readonly':[('state','=','done')]}"/>
+                <field name="ram" attrs="{'readonly':[('state','=','done')]}"/>
+                <field name="disk" attrs="{'readonly':[('state','=','done')]}"/>
+              </group>
+              <group>
+                <field name="limit_date" required="1" attrs="{'readonly':[('state','=','done')]}"/>
+                <field name="treat_date" attrs="{'readonly':[('state','=','done')]}"/>
+                <field name="treat_duration" attrs="{'readonly':[('state','=','done')]}"/>
+              </group>
             </group>
-            <group>
-              <field name="cpu"/>
-              <field name="ram"/>
-              <field name="disk"/>
-              <field name="url"/>
-              <field name="state"/>
-            </group>
-            <group>
-              <field name="limit_date"/>
-              <field name="treat_date"/>
-              <field name="treat_duration"/>
-            </group>
-          </group>
+          </sheet>
         </form>
       </field>
     </record>
 
     <!-- actions opening views on models -->
-<!--
-    <record model="ir.actions.act_window" id="instance_request.action_window">
-      <field name="name">instance_request window</field>
-      <field name="res_model">instance_request.instance_request</field>
+    <record model="ir.actions.act_window" id="instance_request_action">
+      <field name="name">Demande de création</field>
+      <field name="res_model">instance.request</field>
+      <field name="domain">[('create_uid','=',uid)]</field>
+<!--      <field name="context">{'group_by':['limit_date']}</field>-->
       <field name="view_mode">tree,form</field>
     </record>
--->
+
+    <!--    server action treated instance request-->
+    <record model="ir.actions.server" id="action_server_treated">
+      <field name="name">Set to done</field>
+      <field name="type">ir.actions.server</field>
+      <field name="model_id" ref="instance_request.model_instance_request"/>
+      <field name="binding_model_id" ref="instance_request.model_instance_request"/>
+      <field name="state">code</field>
+      <field name="code">records.action_done()</field>
+    </record>
+
+    <!--    planified action (cron) treated instance request-->
+    <record id="ir_cron_instance" model="ir.cron">
+        <field name="name">Deadline in 5 days or least</field>
+        <field name="active" eval="True"/>
+        <field name="user_id" ref="base.user_root"/>
+        <field name="interval_number">5</field>
+        <field name="interval_type">days</field>
+        <field name="numbercall">-1</field>
+        <field name="doall" eval="False"/>
+        <field name="model_id" ref="instance_request.model_instance_request"/>
+        <field name="state">code</field>
+        <field name="code">model.action_done()</field>
+    </record>
 
     <!-- server action to the one above -->
 <!--
@@ -78,9 +138,8 @@
 -->
 
     <!-- Top menu item -->
-<!--
-    <menuitem name="instance_request" id="instance_request.menu_root"/>
--->
+    <menuitem name="instance_request" id="menu_root_instance_request" action="instance_request_action"/>
+
     <!-- menu categories -->
 <!--
     <menuitem name="Menu 1" id="instance_request.menu_1" parent="instance_request.menu_root"/>
