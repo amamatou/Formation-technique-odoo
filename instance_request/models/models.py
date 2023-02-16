@@ -3,24 +3,24 @@
 from odoo import models, fields, api
 
 class instance_request(models.Model):
-     _name = 'instance.request'
-     _description = 'Demande d\'instance'
+     _name = "instance.request"
+     _description = "Demande d'instance"
 
-     name = fields.Char()
-     adress_ip = fields.Char()
-     active = fields.Boolean(default=True)
-     cpu = fields.Char()
-     ram = fields.Char()
-     disk = fields.Char()
-     url = fields.Char()
+     name = fields.Char(string="Designation")
+     adress_ip = fields.Char(string="Addresse IP")
+     active = fields.Boolean(string="Active",default=True)
+     cpu = fields.Char(string="CPU")
+     ram = fields.Char(string="RAM")
+     disk = fields.Char(string="Disque")
+     url = fields.Char(string="URL")
      state = fields.Selection([
           ("brouillon","Brouillon"),
           ("soumise", "Soumise"),
           ("en_traitement", "En traitement"),
           ("traitee","Traitee")
-     ],default='Brouillon')
-     limit_date = fields.Date('Date limite de traitement')
-     treat_date = fields.Datetime('Date de traitement')
+     ],string="Statut",default="Brouillon")
+     limit_date = fields.Date(string="Date limite de traitement")
+     treat_date = fields.Datetime(string="Date de traitement")
      treat_duration = fields.Float(string="Duree de traitement")
 
      #@api.depends('value')

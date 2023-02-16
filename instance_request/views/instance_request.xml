@@ -24,7 +24,7 @@
 
     <!-- explicit form view definition -->
 
-    <record model="ir.ui.view" id="instance_request.list">
+    <record model="ir.ui.view" id="instance_request.form">
       <field name="name">Demande de création d'instance</field>
       <field name="model">instance_request.instance_request</field>
       <field name="arch" type="xml">

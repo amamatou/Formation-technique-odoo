@@ -1,2 +1,2 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_instance_request_instance_request,instance_request.instance_request,model_instance_request_instance_request,1,1,1,1
+instance_request.access_instance_request,access_instance_request,model_instance_request_instance_request,1,1,1,1
