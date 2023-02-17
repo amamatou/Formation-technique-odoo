@@ -18,7 +18,7 @@
       <field name="name">Versions d'odoo</field>
       <field name="model">odoo.version</field>
       <field name="arch" type="xml">
-        <tree>
+        <tree editable="top">
           <field name="name"/>
           <field name="create_uid"/>
           <field name="create_date"/>
@@ -49,13 +49,13 @@
 
     <!-- actions opening views on models -->
     <record model="ir.actions.act_window" id="odoo_version_action">
-      <field name="name">Versions d'odoo</field>
+      <field name="name">Versions de Odoo</field>
       <field name="res_model">odoo.version</field>
       <field name="view_mode">tree,form</field>
     </record>
 
     <!-- Top menu item -->
-    <menuitem name="odoo_version" id="menu_root_odoo_version" action="odoo_version_action"/>
+    <menuitem name="Odoo Version" id="menu_root_odoo_version" action="odoo_version_action"/>
 
   </data>
 </odoo>
