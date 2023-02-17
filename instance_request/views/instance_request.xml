@@ -92,8 +92,19 @@
     <record model="ir.actions.act_window" id="instance_request_action">
       <field name="name">Demande de création</field>
       <field name="res_model">instance.request</field>
-      <field name="domain">[('create_uid','=',uid)]</field>
+<!--      <field name="domain">[('create_uid','=',uid)]</field>-->
 <!--      <field name="context">{'group_by':['limit_date']}</field>-->
+      <field name="view_mode">tree,form</field>
+    </record>
+    <record model="ir.actions.act_window" id="mes_demandes_action">
+      <field name="name">Mes demandes</field>
+      <field name="res_model">instance.request</field>
+      <field name="domain">[('create_uid','=',uid)]</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+    <record model="ir.actions.act_window" id="versions_odoo_action">
+      <field name="name">Versions de odoo</field>
+      <field name="res_model">odoo.version</field>
       <field name="view_mode">tree,form</field>
     </record>
 
@@ -141,11 +152,14 @@
     <menuitem name="instance_request" id="menu_root_instance_request" action="instance_request_action"/>
 
     <!-- menu categories -->
-<!--
-    <menuitem name="Menu 1" id="instance_request.menu_1" parent="instance_request.menu_root"/>
-    <menuitem name="Menu 2" id="instance_request.menu_2" parent="instance_request.menu_root"/>
--->
+    <menuitem name="Mes demandes" id="instance_request.menu_demandes" parent="menu_root_instance_request" action="instance_request.mes_demandes_action"/>
+    <menuitem name="Responsables" id="instance_request.menu_responsables" parent="menu_root_instance_request"/>
+    <menuitem name="Analyse" id="instance_request.menu_analyse" parent="menu_root_instance_request"/>
+    <menuitem name="Configuration" id="instance_request.menu_configuration" parent="menu_root_instance_request"/>
+
     <!-- actions -->
+    <menuitem name="Versions" id="instance_request.menu_configuration_versions" parent="instance_request.menu_configuration"
+              action="versions_odoo_action"/>
 <!--
     <menuitem name="List" id="instance_request.menu_1_list" parent="instance_request.menu_1"
               action="instance_request.action_window"/>
