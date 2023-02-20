@@ -90,6 +90,11 @@
                             </group>
                         </group>
                     </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="activity_ids" widget="mail_activity"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
                 </form>
             </field>
         </record>
@@ -140,7 +145,7 @@
             <field name="code">model.action_done()</field>
         </record>
 
-<!-- Les utilisateurs ne voient que les demandes qu’ils ont crées -->
+        <!-- Les utilisateurs ne voient que les demandes qu’ils ont crées -->
         <record id="see_my_records_only" model="ir.rule">
             <field name="name">Only see my records</field>
             <field name="model_id" ref="instance_request.model_instance_request"/>
@@ -152,7 +157,7 @@
             <field name="domain_force">[('create_uid','=',user.id)]</field>
         </record>
 
-<!--        Les responsables voient toutes les demande-->
+        <!--        Les responsables voient toutes les demande-->
         <record id="see_all_records" model="ir.rule">
             <field name="name">See all records</field>
             <field name="model_id" ref="instance_request.model_instance_request"/>

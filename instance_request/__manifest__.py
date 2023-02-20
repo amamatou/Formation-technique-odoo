@@ -19,7 +19,7 @@
     'version': '16.0',
 
     # any module necessary for this one to work correctly
-    'depends': ['base'],
+    'depends': ['base','mail','contacts'],
 
     # always loaded
     'data': [
@@ -31,6 +31,7 @@
         'views/odoo_version.xml',
         #'reports/rapport.xml',
         'data/version_odoo.xml',
+        'data/instance_request_to_process.xml'
     ],
     # only loaded in demonstration mode
     'demo': [
