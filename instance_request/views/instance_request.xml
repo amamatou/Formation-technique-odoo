@@ -74,8 +74,7 @@
                                 <field name="active" attrs="{'readonly':[('state','=','done')]}"/>
                             </group>
                             <group>
-                                <field name="adress_ip" attrs="{'invisible':['|',('state','=','draft'),'|',('state','=','submitted'),('state','=','in_process')],
-                                                'readonly':[('state','=','done')]}"/>
+                                <field name="adress_ip" attrs="{'invisible':['|',('state','=','draft'),'|',('state','=','submitted'),('state','=','in_process')],}"/>
                                 <field name="url" attrs="{'readonly':[('state','=','done')]}"/>
                             </group>
                             <group>

@@ -19,7 +19,7 @@
     'version': '16.0',
 
     # any module necessary for this one to work correctly
-    'depends': ['base','mail','contacts'],
+    'depends': ['base','mail','contacts','sale_management'],
 
     # always loaded
     'data': [
@@ -30,8 +30,10 @@
         'views/instance_request.xml',
         'views/odoo_version.xml',
         #'reports/rapport.xml',
-        'data/version_odoo.xml',
-        'data/instance_request_to_process.xml'
+        'datas/version_odoo.xml',
+        'datas/instance_request_to_process.xml',
+        'datas/create_instance_mail_template.xml',
+        'datas/instance_created_mail_template.xml'
     ],
     # only loaded in demonstration mode
     'demo': [

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record id="instance_request_creation" model="mail.template">
+            <field name="name">Creation d'instance</field>
+            <field name="model_id" ref="instance_request.model_instance_request"/>
+            <field name="subject">${{object.name}}</field>
+            <field name="description">Inform user the instance creation</field>
+            <field name="email_from">${{user.email_formatted}}</field>
+            <!--            <field name="auto_delete" eval="True"/>
+                        <field name="email_to">${{object.client_name.email}}</field>-->
+            <!--            <field name="report_template" ref="action_example_pdf"/>-->
+            <!--            <field name="subject">${object.amc}</field>-->
+            <field name="body_html" type="html">
+                <div>
+                    <p>Bonjour, Veuillez bien créer une instance
+                        <t t-out="object.name"/>
+                        avec comme performances :
+                        <br/>
+                        <br/>
+                        <span style="padding:0 0 0 20px;">Tableau contenant : cpu, ram, disk</span>
+                        <br/>
+                        <br/>
+                        Cordialement
+                    </p>
+                </div>
+            </field>
+        </record>
+    </data>
+</odoo>
