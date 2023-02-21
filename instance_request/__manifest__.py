@@ -33,7 +33,7 @@
         'data/version_odoo.xml',
         'data/instance_request_to_process.xml',
         'data/create_instance_mail_template.xml',
-        'data/instance_created_mail_template.xml'
+        'data/instance_created_mail_template.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

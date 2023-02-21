@@ -141,7 +141,7 @@
             <field name="doall" eval="False"/>
             <field name="model_id" ref="instance_request.model_instance_request"/>
             <field name="state">code</field>
-            <field name="code">model.action_done()</field>
+            <field name="code">model.set_submit_with_limit_date()</field>
         </record>
 
         <!-- Les utilisateurs ne voient que les demandes qu’ils ont crées -->

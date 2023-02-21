@@ -2,7 +2,8 @@
 
 from odoo import models, fields, api
 from datetime import timedelta
-import  pprint
+import datetime
+import pprint
 
 
 class InstanceRequest(models.Model):
@@ -35,10 +36,19 @@ class InstanceRequest(models.Model):
                            email_values={'email_to': record.create_uid.email, 'email_from': self.env.user.email})
 
     def action_submit(self):
-        for record in self:
+        allrecords = self.search([])
+        for record in allrecords:
             get_if_submit = self.env.context.get('get_if_submit', False)
             print("==========>  ", get_if_submit)
             record.state = 'submitted'
+            remaining_days = record.limit_date - datetime.date.today()
+            users = self.env.ref('instance_request.instance_request_group_manager').users
+            for user in users:
+                self.activity_schedule(
+                    'instance_request.instance_request_to_process',
+                    note=('Instance request in process, deadline in %s days.'%(remaining_days)),
+                    user_id=user.id
+                )
 
     def action_progress(self):
         for record in self:
@@ -70,34 +80,38 @@ class InstanceRequest(models.Model):
             template.send_mail(record.id,
                                email_values={'email_to': record.create_uid.email, 'email_from': self.env.user.email})
 
-    # def instance_request_to_process(self, init_values):
-    #      self.ensure_one()
-    #      if 'state' in init_values and (self.state == 'draft' or self.state == 'submitted'):
-    #           return self.env.ref('my_module.mt_state_change')
-    #      return super(InstanceRequest,self).instance_request_to_process(init_values)
+    @api.model
+    def set_submit_with_limit_date(self):
+        allrecords = self.search([])
+        for record in allrecords:
+            if (record.limit_date - timedelta(days=5)) <= datetime.date.today() < (
+                    record.limit_date + timedelta(days=6)) and record.state == "draft":
+                record.state = "submitted"
 
-    @api.model_create_multi
-    def create(self, vals_list):
-        print("================ vals_list ===================")
-        pprint.pprint(vals_list)
-        records = super().create(vals_list)
-        print("========> records ", records)
-        for val in vals_list:
-            val['cpu'] = 8
-            print("========> vals ", val)
-        for rec in records:
-            print("========> RAM before ", rec.ram)
-            rec.ram = 16
-            print("========> RAM after ", rec.ram)
+@api.model_create_multi
+def create(self, vals_list):
+    print("================ vals_list ===================")
+    pprint.pprint(vals_list)
+    records = super().create(vals_list)
+    print("========> records ", records)
+    for val in vals_list:
+        val['cpu'] = 8
+        print("========> vals ", val)
+    for rec in records:
+        print("========> RAM before ", rec.ram)
+        rec.ram = 16
+        print("========> RAM after ", rec.ram)
+
+    return records
 
 
-        return records
+@api.onchange('treat_duration')
+def increase_treat_date(self):
+    for record in self:
+        if record.treat_date:
+            record.treat_date = record.treat_date + timedelta(hours=record.treat_duration)
 
-    @api.onchange('treat_duration')
-    def increase_treat_date(self):
-        for record in self:
-            if record.treat_date:
-                record.treat_date = record.treat_date + timedelta(hours=record.treat_duration)
 
-    # depends agit apres la sauvegarde
-    # constraints agit avant la sauvegarde
+
+# depends agit apres la sauvegarde
+# constraints agit avant la sauvegarde
