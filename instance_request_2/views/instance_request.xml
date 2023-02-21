@@ -103,9 +103,9 @@
             <field name="name">Creation request</field>
             <field name="res_model">instance.request</field>
             <field name="view_mode">tree,form</field>
-        </record>
             <!--      <field name="domain">[('create_uid','=',uid)]</field>-->
             <!--      <field name="context">{'group_by':['limit_date']}</field>-->
+        </record>
 
         <record model="ir.actions.act_window" id="my_request_action">
             <field name="name">My requests</field>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data>
+        <record id="instance_request_to_process_activity" model="mail.activity.type">
+            <field name="name">A traiter</field>
+            <field name="icon">fa-spinner</field>
+            <field name="decoration_type">warning</field>
+            <field name="res_model">instance.request</field>
+        </record>
+    </data>
+</odoo>

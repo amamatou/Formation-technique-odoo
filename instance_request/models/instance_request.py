@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, api
+from datetime import timedelta
+import  pprint
 
 
 class InstanceRequest(models.Model):
@@ -42,7 +44,7 @@ class InstanceRequest(models.Model):
         for record in self:
             record.state = 'in_process'
             # pointe sur le groupe, recuperer l'id du groupe
-            user_group = self.env.ref('instance_request.group_manager')
+            user_group = self.env.ref('instance_request.instance_request_group_manager')
             print("==========> groupe:  ", user_group)
             users = user_group.users
 
@@ -51,7 +53,7 @@ class InstanceRequest(models.Model):
 
             user_connected = self.env.user
             print("==========> utilisateur connecté:  ", user_connected)
-            has_user_group = user_connected.has_group('instance_request.group_manager')
+            has_user_group = user_connected.has_group('instance_request.instance_request_group_manager')
             print("==========> Il appartient au groupe manager?  ", has_user_group)
 
             model_access = user_group.model_access
@@ -74,3 +76,28 @@ class InstanceRequest(models.Model):
     #           return self.env.ref('my_module.mt_state_change')
     #      return super(InstanceRequest,self).instance_request_to_process(init_values)
 
+    @api.model_create_multi
+    def create(self, vals_list):
+        print("================ vals_list ===================")
+        pprint.pprint(vals_list)
+        records = super().create(vals_list)
+        print("========> records ", records)
+        for val in vals_list:
+            val['cpu'] = 8
+            print("========> vals ", val)
+        for rec in records:
+            print("========> RAM before ", rec.ram)
+            rec.ram = 16
+            print("========> RAM after ", rec.ram)
+
+
+        return records
+
+    @api.onchange('treat_duration')
+    def increase_treat_date(self):
+        for record in self:
+            if record.treat_date:
+                record.treat_date = record.treat_date + timedelta(hours=record.treat_duration)
+
+    # depends agit apres la sauvegarde
+    # constraints agit avant la sauvegarde

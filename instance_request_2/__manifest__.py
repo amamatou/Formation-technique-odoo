@@ -19,12 +19,12 @@
     'version': '16.0',
 
     # any module necessary for this one to work correctly
-    'depends': ['base','mail','contacts','sale_management'],
+    'depends': ['instance_request'],
 
     # always loaded
     'data': [
-        'security/security.xml',
         'security/ir.model.access.csv',
+        'security/security.xml',
         #'views/views.xml',
         #'views/templates.xml',
         'views/instance_request.xml',
