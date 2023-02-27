@@ -6,14 +6,12 @@
             <field name="model">hr.employee</field>
             <field name="inherit_id" ref="hr.view_employee_form"/>
             <field name="arch" type="xml">
-<!--                <field name="category_id" position="after">-->
-<!--                    <field name="odoo_version_id" required="1"/>-->
-<!--                </field>-->
                 <xpath expr="//field[@name='coach_id']" position="after">
-                   <button name="employee_instance_requests"
-                                string="Instances"
-                                class="btn-primary"
-                                type="object"/>
+                    <field name="nb_instances" readonly="1"/>
+                       <button name="employee_instance_requests"
+                                    string="Instances"
+                                    class="btn-primary"
+                                    type="object"/>
                 </xpath>
             </field>
         </record>

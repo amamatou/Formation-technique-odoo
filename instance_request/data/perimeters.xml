@@ -1,17 +1,17 @@
 <odoo>
-    <record model="perimeters" id="permitres_achats_id">
-        <field name="name">Achats</field>
+    <record model="perimeters" id="perimeters_purchases_id">
+        <field name="name">Purchases</field>
     </record>
-    <record model="perimeters" id="permitres_ventes_id">
-        <field name="name">Ventes</field>
+    <record model="perimeters" id="perimeters_sales_id">
+        <field name="name">Sales</field>
     </record>
-    <record model="perimeters" id="permitres_documents_id">
+    <record model="perimeters" id="perimeters_documents_id">
         <field name="name">Documents</field>
     </record>
-    <record model="perimeters" id="permitres_projets_id">
-        <field name="name">Projets</field>
+    <record model="perimeters" id="perimeters_projects_id">
+        <field name="name">Projects</field>
     </record>
-    <record model="perimeters" id="permitres_agriculture_id">
+    <record model="perimeters" id="perimeters_agriculture_id">
         <field name="name">Agriculture</field>
     </record>
 </odoo>

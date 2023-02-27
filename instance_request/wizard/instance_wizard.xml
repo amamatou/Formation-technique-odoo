@@ -3,7 +3,7 @@
     <data>
         <!-- form view -->
         <record model="ir.ui.view" id="instance_wizard_form">
-            <field name="name">Demande d'affectation de Odoo version</field>
+            <field name="name">Affectation request of odoo version</field>
             <field name="model">instance.wizard</field>
             <field name="arch" type="xml">
                 <form string="Affectation">

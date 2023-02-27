@@ -3,7 +3,7 @@
     <data>
         <!-- search view -->
         <record model="ir.ui.view" id="odoo_version_search">
-            <field name="name">Versions d'odoo</field>
+            <field name="name">Odoo versions</field>
             <field name="model">odoo.version</field>
             <field name="arch" type="xml">
                 <search>
@@ -17,7 +17,7 @@
 
         <!-- list view -->
         <record model="ir.ui.view" id="odoo_version_list">
-            <field name="name">Versions d'odoo</field>
+            <field name="name">Odoo versions</field>
             <field name="model">odoo.version</field>
             <field name="arch" type="xml">
                 <!-- create="false" :pour ne pas avoir de boutton create
@@ -34,7 +34,7 @@
 
         <!-- form view -->
         <record model="ir.ui.view" id="odoo_version_form">
-            <field name="name">Versions d'odoo</field>
+            <field name="name">Odoo versions</field>
             <field name="model">odoo.version</field>
             <field name="arch" type="xml">
                 <form string="Idea form">

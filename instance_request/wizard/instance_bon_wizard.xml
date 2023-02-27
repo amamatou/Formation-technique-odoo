@@ -3,14 +3,11 @@
     <data>
         <!-- form view -->
         <record model="ir.ui.view" id="instance_bon_wizard_form">
-            <field name="name">Liste des bon de commandes</field>
+            <field name="name">List of sale orders</field>
             <field name="model">instance.bon.wizard</field>
             <field name="arch" type="xml">
-                <form string="Purchase order">
+                <form string="Sale orders">
                     <group>
-                        <group>
-                            <field name="sale_order_ids" required="1"/>
-                        </group>
                         <group>
                             <field name="cpu"/>
                             <field name="ram"/>
@@ -18,6 +15,9 @@
                         </group>
                         <group>
                             <field name="tl_id"/>
+                        </group>
+                        <group>
+                            <field name="sale_order_ids" required="1"/>
                         </group>
                     </group>
                     <footer>
@@ -35,6 +35,7 @@
             <field name="name">Create instance</field>
             <field name="res_model">instance.bon.wizard</field>
             <field name="view_mode">form</field>
+            <field name="context">{'default_sale_order_ids': active_ids}</field>
             <field name="target">new</field>
             <field name="binding_model_id" ref="sale_management.model_sale_order"/>
         </record>

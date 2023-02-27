@@ -2,10 +2,10 @@
 <odoo>
     <data>
         <record id="instance_request_creation" model="mail.template">
-            <field name="name">Creation d'instance</field>
+            <field name="name">Instance Creation</field>
             <field name="model_id" ref="instance_request.model_instance_request"/>
-            <field name="subject">Creation d'instance</field>
-            <field name="description">Inform user the instance creation</field>
+            <field name="subject">Instance Creation</field>
+            <field name="description">Specification for the instance creation</field>
             <field name="email_from">${{user.email_formatted}}</field>
             <!--            <field name="auto_delete" eval="True"/>
                         <field name="email_to">${{object.client_name.email}}</field>-->
@@ -13,15 +13,15 @@
             <!--            <field name="subject">${object.amc}</field>-->
             <field name="body_html" type="html">
                 <div>
-                    <p>Bonjour, Veuillez bien créer une instance
+                    <p>Good morning, please create an instance
                         <t t-out="object.name"/>
-                        avec comme performances :
+                        with the following performances :
                         <br/>
                         <br/>
-                        <span style="padding:0 0 0 20px;">Tableau contenant : cpu, ram, disk</span>
+                        <span style="padding:0 0 0 20px;">Array containing : cpu, ram, disk</span>
                         <br/>
                         <br/>
-                        Cordialement
+                        Cordially
                     </p>
                 </div>
             </field>

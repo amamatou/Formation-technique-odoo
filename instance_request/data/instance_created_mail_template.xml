@@ -2,9 +2,9 @@
 <odoo>
     <data>
         <record id="instance_request_instance_created" model="mail.template">
-            <field name="name">Instance créée</field>
+            <field name="name">Instance created</field>
             <field name="model_id" ref="instance_request.model_instance_request"/>
-            <field name="subject">Instance créée</field>
+            <field name="subject">Instance created</field>
             <field name="description">Inform user the instance creation</field>
             <field name="email_from">${{user.email_formatted}}</field>
             <!--            <field name="auto_delete" eval="True"/>
@@ -16,7 +16,11 @@
                     <p>Bonjour,
                         <br/>
                         <br/>
-                        <span style="padding:0 0 0 20px;">Votre instance <t t-out="object.name"/> a bien été crée. Elle est accessble sur le lien <t t-out="object.address_ip"/></span>
+                        <span style="padding:0 0 0 20px;">Votre instance
+                            <t t-out="object.name"/>
+                            a bien été crée. Elle est accessble sur le lien
+                            <t t-out="object.address_ip"/>
+                        </span>
                     </p>
                 </div>
             </field>

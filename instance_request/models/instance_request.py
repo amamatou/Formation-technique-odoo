@@ -38,9 +38,9 @@ class InstanceRequest(models.Model):
 
     nb_lines = fields.Integer(string="Nb Lines", compute="_compute_nb_lines", store=1)
 
-    partner_id = fields.Many2one("res.partner", string="Client")
-    tl_id = fields.Many2one("hr.employee", string="Employe")
-    tl_user_id = fields.Many2one("", string="Utilisateur sur l'employe")
+    partner_id = fields.Many2one("res.partner", string="Customer")
+    tl_id = fields.Many2one("hr.employee", string="Employee")
+    tl_user_id = fields.Many2one("", string="User on employee")
 
     color = fields.Selection(selection=[
         ('green', 'Green'),
@@ -68,17 +68,17 @@ class InstanceRequest(models.Model):
     def action_progress(self):
         for record in self:
             record.state = 'in_process'
-            # pointe sur le groupe, recuperer l'id du groupe
+            # point on the group, retrieve the id of the group
             user_group = self.env.ref('instance_request.instance_request_group_manager')
-            print("==========> groupe:  ", user_group)
+            print("==========> group:  ", user_group)
             users = user_group.users
             for user in users:
                 print("======> name: ", user.name)
 
             user_connected = self.env.user
-            print("==========> utilisateur connecté:  ", user_connected)
+            print("==========> user connected:  ", user_connected)
             has_user_group = user_connected.has_group('instance_request.instance_request_group_manager')
-            print("==========> Il appartient au groupe manager?  ", has_user_group)
+            print("==========> He belongs to the group manager?  ", has_user_group)
 
             model_access = user_group.model_access
             print('============== model access =================')
@@ -91,7 +91,7 @@ class InstanceRequest(models.Model):
             for user in users:
                 self.activity_schedule(
                     'instance_request.instance_request_to_process_activity',
-                    note=('Instance request in process, deadline in %s days.' % (remaining_days)),
+                    note=('Instance request in process, deadline in %s days.' % remaining_days),
                     user_id=user.id
                 )
             # self.activity_schedule(
@@ -132,8 +132,12 @@ class InstanceRequest(models.Model):
         for val in vals_list:
             val['cpu'] = 8
             print("========> vals ", val)
+
+            if not val['name']:
+                raise UserError('Name of sequence is required !')
+
             if val['name'] == 'New':
-                val['name'] = 'INST' + self.env['ir.sequence'].next_by_code('instance.request')
+                val['name'] = self.env['ir.sequence'].next_by_code('instance.request.sequence')
 
         records = super().create(vals_list)
         print("========> records ", records)
@@ -151,14 +155,14 @@ class InstanceRequest(models.Model):
             if record.treat_date:
                 record.treat_date = record.treat_date + timedelta(hours=record.treat_duration)
 
-    # depends agit apres la sauvegarde
-    # constraints agit avant la sauvegarde
+    # depends acts after the backup
+    # constraints acts before the backup
 
     @api.onchange('limit_date')
     def limit_date_exception(self):
         for record in self:
-            if record.limit_date != False and date.today() > record.limit_date:
-                raise UserError('Vous ne pouvez pas définir une date limite postérieure à aujourd’hui.')
+            if (not record.limit_date) and (date.today() > record.limit_date):
+                raise UserError("You can't define a limit date before today !")
 
     @api.depends('limit_date')
     def limit_date_activity(self):
@@ -168,12 +172,12 @@ class InstanceRequest(models.Model):
             for user in users:
                 self.activity_schedule(
                     'instance_request.instance_request_to_process_activity',
-                    note=('processing deadline have been changed, deadline in %s days.' % (remaining_days)),
+                    note=('processing deadline have been changed, deadline in %s days.' % remaining_days),
                     user_id=user.id
                 )
 
     def unlink(self):
         for record in self:
             if record.state != 'draft':
-                raise UserError('Vous ne pouvez supprimer que les demande d’instance en état Brouillon.')
+                raise UserError("You can only delete instance requests with draft state !")
         return super(InstanceRequest, self).unlink()

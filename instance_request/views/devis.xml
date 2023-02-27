@@ -40,7 +40,7 @@
                         <button name="%(instance_request.instance_bon_wizard_launch)d"
                                 class="oe_highlight"
                                 type="action"
-                                string="Creer des instances"/>
+                                string="Create instances"/>
                     </header>
                 </xpath>
             </field>

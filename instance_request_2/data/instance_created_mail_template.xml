@@ -2,7 +2,7 @@
 <odoo>
     <data>
         <record id="instance_request_instance_created" model="mail.template">
-            <field name="name">Creation d'instance</field>
+            <field name="name">Instance Creation</field>
             <field name="model_id" ref="instance_request.model_instance_request"/>
             <field name="subject">${{object.name}}</field>
             <field name="description">Inform user the instance creation</field>

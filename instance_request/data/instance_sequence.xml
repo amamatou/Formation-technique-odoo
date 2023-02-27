@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!--        Sequence de demande d'instance-->
+    <record model="ir.sequence" id="sequence_instance">
+        <field name="name">Instance request sequence</field>
+        <field name="code">instance.request.sequence</field>
+        <field name="prefix">INST</field>
+        <field name="padding">5</field>
+        <field name="implementation">standard</field>
+    </record>
+</odoo>

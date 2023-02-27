@@ -3,10 +3,10 @@
     'name': "INSTANCE REQUEST",
 
     'summary': """
-        Demande d'instance""",
+        Instance request""",
 
     'description': """
-        Demande d'instance
+        Instance request
     """,
 
     'author': "Mhao",
@@ -27,19 +27,17 @@
         'security/ir.model.access.csv',
         'wizard/instance_wizard.xml',
         'wizard/instance_bon_wizard.xml',
-        # 'views/views.xml',
-        # 'views/templates.xml',
         'views/instance_request.xml',
         'views/odoo_version.xml',
         'views/res_partner.xml',
         'views/hr_employee.xml',
         'views/devis.xml',
-        # 'reports/rapport.xml',
         'data/version_odoo.xml',
         'data/instance_request_to_process.xml',
         'data/create_instance_mail_template.xml',
         'data/instance_created_mail_template.xml',
         'data/perimeters.xml',
+        'data/instance_sequence.xml',
     ],
     # only loaded in demonstration mode
     'demo': [
