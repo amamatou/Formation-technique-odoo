@@ -7,8 +7,11 @@
             <field name="model">instance.request</field>
             <field name="arch" type="xml">
                 <search>
+                    <field name="name" string="Name and Odoo version"
+                           filter_domain="['|', ('name', 'ilike', self),'|',('odoo_version_id', 'ilike', self),'|',('state','ilike',self),('tl_id','ilike',self)]"/>
                     <field name="name"/>
-                    <field name="adress_ip"/>
+                    <field name="color" invisible="1"/>
+                    <field name="address_ip"/>
                     <field name="active"/>
                     <field name="cpu"/>
                     <field name="ram"/>
@@ -18,6 +21,20 @@
                     <field name="treat_date"/>
                     <field name="treat_duration"/>
                     <field name="state"/>
+                    <filter name="instance_done" string="Done"
+                            domain="[('state', '=', 'done')]"/>
+                    <filter name="instance_draft" string="Draft"
+                            domain="[('state', '=', 'draft')]"/>
+                    <separator/>
+                    <filter name="instance_red" string="Red"
+                            domain="[('color', '=', 'red')]"/>
+
+                    <group string="Group By">
+                        <filter name="group_by_state" string="State"
+                                context="{'group_by': 'state'}"/>
+                        <filter name="group_by_odoo_version_id" string="Odoo Version"
+                                context="{'group_by': 'odoo_version_id'}"/>
+                    </group>
                 </search>
             </field>
         </record>
@@ -27,12 +44,16 @@
             <field name="name">Instance creation request</field>
             <field name="model">instance.request</field>
             <field name="arch" type="xml">
-                <tree>
+                <tree string="Idea Categories" decoration-success="color=='green'" decoration-warning="color=='yellow'"
+                      decoration-danger="color=='red'">
+                    <field name="color" invisible="0"/>
                     <field name="name"/>
                     <field name="create_uid"/>
                     <field name="cpu"/>
                     <field name="ram"/>
                     <field name="disk"/>
+                    <field name="odoo_version_id"/>
+<!--                    <field name="odoo_version_ids" widget="many2many_tags" options="{'color_field': 'id'}"/>-->
                     <field name="limit_date"/>
                     <field name="state"/>
                     <button string="Set to draft" type="object" name="action_draft" icon="fa-file"
@@ -44,6 +65,84 @@
                     <button string="Done" type="object" name="action_done" icon="fa-thumbs-up" states="in_process"
                             groups="instance_request.instance_request_group_manager"/>
                 </tree>
+            </field>
+        </record>
+
+        <!--        kanban view-->
+        <record model="ir.ui.view" id="instance_request.kanban">
+            <field name="name">Instance creation request</field>
+            <field name="model">instance.request</field>
+            <field name="arch" type="xml">
+                <kanban class="o_kanban_mobile" sample="1" default_group_by="state">
+                    <field name="name"/>
+                    <field name="color"/>
+                    <field name="state"/>
+                    <field name="limit_date"/>
+<!--                    <field name="odoo_version_ids"/>-->
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div t-attf-class="oe_kanban_global_click">
+                                <div class="row mb4">
+                                    <div class="col-12">
+                                        <field name="name"/>
+                                        <br/>
+                                        <field name="color"/>
+                                       <!-- <field name="odoo_version_ids" widget="many2many_tags"
+                                               options="{'color_field': 'id'}"/>-->
+                                        <field name="limit_date"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <!-- graph -->
+        <record model="ir.ui.view" id="instance_request.graph">
+            <field name="name">Instance creation request</field>
+            <field name="model">instance.request</field>
+            <field name="arch" type="xml">
+                <graph string="Instance graph">
+                    <field name="create_date"/>
+                    <field name="id" type="measure"/>
+                </graph>
+            </field>
+        </record>
+
+        <!-- pivot -->
+<!--        <record model="ir.ui.view" id="instance_request.pivot">-->
+<!--            <field name="name">Instance creation request</field>-->
+<!--            <field name="model">instance.request</field>-->
+<!--            <field name="arch" type="xml">-->
+<!--                <pivot string="Instance pivot">-->
+<!--                    <field name="state" type="col"/>-->
+<!--                    <field name="odoo_version_id" type="row"/>-->
+<!--                    <field name="nb_lines" type="measure"/>-->
+<!--                </pivot>-->
+<!--            </field>-->
+<!--        </record>-->
+         <record model="ir.ui.view" id="instance_request.pivot">
+            <field name="name">Instance creation request</field>
+            <field name="model">instance.request</field>
+            <field name="arch" type="xml">
+                <pivot string="Instance pivot">
+                    <field name="treat_duration" type="row"/>
+                </pivot>
+            </field>
+        </record>
+
+        <!-- Gantt -->
+        <record model="ir.ui.view" id="instance_request.gantt">
+            <field name="name">Instance creation request</field>
+            <field name="model">instance.request</field>
+            <field name="arch" type="xml">
+                <gantt string="Ideas"
+                       date_start="create_date"
+                       date_stop="limit_date"
+                       progress="treat_date"
+                       default_group_by="limit_date"/>
             </field>
         </record>
 
@@ -74,7 +173,8 @@
                                 <field name="active" attrs="{'readonly':[('state','=','done')]}"/>
                             </group>
                             <group>
-                                <field name="adress_ip" attrs="{'invisible':['|',('state','=','draft'),'|',('state','=','submitted'),('state','=','in_process')],}"/>
+                                <field name="address_ip"
+                                       attrs="{'invisible':['|',('state','=','draft'),('state','=','submitted')],'readonly':[('state','=','done')]}"/>
                                 <field name="url" attrs="{'readonly':[('state','=','done')]}"/>
                             </group>
                             <group>
@@ -83,10 +183,28 @@
                                 <field name="disk" attrs="{'readonly':[('state','=','done')]}"/>
                             </group>
                             <group>
+                                <field name="odoo_version_id"/>
+<!--                                <field name="odoo_version_ids" widget="many2many_tags" options="{'color_field': 'id'}"/>-->
+                                <field name="nb_lines"/>
+                            </group>
+                            <group>
                                 <field name="limit_date" required="1" attrs="{'readonly':[('state','=','done')]}"/>
                                 <field name="treat_date" attrs="{'readonly':[('state','=','done')]}"/>
                                 <field name="treat_duration" attrs="{'readonly':[('state','=','done')]}"/>
                             </group>
+                            <group>
+                                <field name="tl_id"/>
+                            </group>
+                            <notebook>
+                                <page string="Lines">
+                                    <field name="requests_line_ids">
+                                        <tree editable="bottom">
+                                            <field name="name" required="1"/>
+                                            <field name="odoo_version_id" readonly="0" force_save="1"/>
+                                        </tree>
+                                    </field>
+                                </page>
+                            </notebook>
                         </group>
                     </sheet>
                     <div class="oe_chatter">
@@ -98,14 +216,27 @@
             </field>
         </record>
 
+        <!--        Sequence de demande d'instance-->
+        <record model="ir.sequence" id="seq_name_occ">
+            <field name="name">Instance request sequence</field>
+            <field name="code">instance.request</field>
+            <field name="active">TRUE</field>
+            <field name="prefix">TSK</field>
+            <field name="number_increment">1</field>
+            <field name="number_next">1</field>
+            <field name="padding">3</field>
+            <field name="implementation">standard</field>
+        </record>
+
         <!-- actions opening views on models -->
         <record model="ir.actions.act_window" id="instance_request_action">
             <field name="name">Creation request</field>
             <field name="res_model">instance.request</field>
-            <field name="view_mode">tree,form</field>
+            <field name="context">{'default_cpu':2}</field>
+            <field name="view_mode">tree,form,kanban,pivot,gantt</field>
         </record>
-            <!--      <field name="domain">[('create_uid','=',uid)]</field>-->
-            <!--      <field name="context">{'group_by':['limit_date']}</field>-->
+        <!--      <field name="domain">[('create_uid','=',uid)]</field>-->
+        <!--      <field name="context">{'group_by':['limit_date']}</field>-->
 
         <record model="ir.actions.act_window" id="my_request_action">
             <field name="name">My requests</field>
@@ -114,11 +245,24 @@
             <field name="view_mode">tree,form</field>
         </record>
 
+        <record model="ir.actions.act_window" id="instance_request.analyse">
+            <field name="name">Analyse</field>
+            <field name="res_model">instance.request</field>
+            <field name="view_mode">graph</field>
+        </record>
+
         <record model="ir.actions.act_window" id="instance_request.odoo_version_action">
             <field name="name">Odoo Versions</field>
             <field name="res_model">odoo.version</field>
             <field name="view_mode">tree,form</field>
         </record>
+
+        <record model="ir.actions.act_window" id="instance_request.perimeters_action">
+            <field name="name">Perimeters</field>
+            <field name="res_model">perimeters</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
 
         <!--    server action treated instance request-->
         <record model="ir.actions.server" id="action_server_treated">
@@ -186,7 +330,8 @@
 
         <!-- Top menu item -->
         <menuitem name="Instance request" id="instance_request.menu_root" action="instance_request_action"
-                  groups="instance_request.instance_request_group_user"/>
+                  groups="instance_request.instance_request_group_user"
+                  web_icon="instance_request, static/description/icon.png"/>
 
         <!-- menu categories -->
         <menuitem name="My requests" id="instance_request.menu_my_request" parent="instance_request.menu_root"
@@ -194,7 +339,7 @@
         <menuitem name="Managers" id="instance_request.menu_managers" parent="instance_request.menu_root"
                   action="instance_request_action" groups="instance_request.instance_request_group_manager"/>
         <menuitem name="Analyse" id="instance_request.menu_analyse" parent="instance_request.menu_root"
-                  action="instance_request_action" groups="instance_request.instance_request_group_user"/>
+                  action="instance_request.analyse" groups="instance_request.instance_request_group_user"/>
         <menuitem name="Configuration" id="instance_request.menu_configuration" parent="instance_request.menu_root"
                   groups="instance_request.instance_request_group_admin"/>
 
@@ -202,6 +347,9 @@
         <menuitem name="Versions" id="instance_request.menu_configuration_versions"
                   parent="instance_request.menu_configuration"
                   action="instance_request.odoo_version_action"/>
+        <menuitem name="Perimeters" id="instance_request.menu_configuration_perimeters"
+                  parent="instance_request.menu_configuration"
+                  action="instance_request.perimeters_action"/>
         <!--
             <menuitem name="List" id="instance_request.menu_1_list" parent="instance_request.menu_1"
                       action="instance_request.action_window"/>

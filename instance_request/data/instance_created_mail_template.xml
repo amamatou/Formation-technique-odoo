@@ -16,7 +16,7 @@
                     <p>Bonjour,
                         <br/>
                         <br/>
-                        <span style="padding:0 0 0 20px;">Votre instance <t t-out="object.name"/> a bien été crée. Elle est accessble sur le lien <t t-out="object.adress_ip"/></span>
+                        <span style="padding:0 0 0 20px;">Votre instance <t t-out="object.name"/> a bien été crée. Elle est accessble sur le lien <t t-out="object.address_ip"/></span>
                     </p>
                 </div>
             </field>

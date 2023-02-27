@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data>
+        <!--        form-->
+        <record model="ir.ui.view" id="view_res_partner_inherit">
+            <field name="name">res.partner.form.inherit</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <field name="category_id" position="after">
+                    <field name="odoo_version_id" required="1"/>
+                </field>
+                <!--<xpath expr="//field[@name='category_id']" position="after">
+                    <field name="odoo_version_id" required="1"/>
+                </xpath>-->
+            </field>
+        </record>
+
+        <!--        list-->
+        <record model="ir.ui.view" id="view_res_partner_list_inherit">
+            <field name="name">res.partner.list.inherit</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='phone']" position="before">
+                    <field name="odoo_version_id"/>
+                </xpath>
+                <xpath expr="//field[@name='display_name']" position="before">
+                    <header>
+                        <button name="%(instance_request.instance_wizard_launch)d"
+                                class="oe_highlight"
+                                type="action"
+                                string="Affect"/>
+                    </header>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

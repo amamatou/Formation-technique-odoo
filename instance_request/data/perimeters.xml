@@ -1,0 +1,17 @@
+<odoo>
+    <record model="perimeters" id="permitres_achats_id">
+        <field name="name">Achats</field>
+    </record>
+    <record model="perimeters" id="permitres_ventes_id">
+        <field name="name">Ventes</field>
+    </record>
+    <record model="perimeters" id="permitres_documents_id">
+        <field name="name">Documents</field>
+    </record>
+    <record model="perimeters" id="permitres_projets_id">
+        <field name="name">Projets</field>
+    </record>
+    <record model="perimeters" id="permitres_agriculture_id">
+        <field name="name">Agriculture</field>
+    </record>
+</odoo>

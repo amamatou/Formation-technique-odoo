@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <data>
         <!-- search view -->
@@ -7,6 +8,7 @@
             <field name="arch" type="xml">
                 <search>
                     <field name="name"/>
+                    <field name="current_version"/>
                     <field name="create_uid"/>
                     <field name="create_date"/>
                 </search>
@@ -18,8 +20,12 @@
             <field name="name">Versions d'odoo</field>
             <field name="model">odoo.version</field>
             <field name="arch" type="xml">
-                <tree editable="top">
+                <!-- create="false" :pour ne pas avoir de boutton create
+                 multi_edit="1": edition multiple-->
+                <!--                <tree editable="top" default_order="name asc" create="false" multi_edit="1">-->
+                <tree>
                     <field name="name"/>
+                    <field name="current_version"/>
                     <field name="create_uid"/>
                     <field name="create_date"/>
                 </tree>
@@ -41,6 +47,22 @@
                             <group>
                                 <field name="name" required="1"/>
                             </group>
+                            <notebook>
+                                <page string="Instances">
+                                    <field name="instance_ids">
+                                        <tree string="List of instance requests">
+                                            <field name="name"/>
+                                            <field name="create_uid"/>
+                                            <field name="cpu"/>
+                                            <field name="ram"/>
+                                            <field name="disk"/>
+                                            <field name="odoo_version_id"/>
+                                            <field name="limit_date"/>
+                                            <field name="state"/>
+                                        </tree>
+                                    </field>
+                                </page>
+                            </notebook>
                         </group>
                     </sheet>
                 </form>

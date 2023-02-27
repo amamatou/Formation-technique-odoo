@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data>
+        <!-- form view -->
+        <record model="ir.ui.view" id="instance_wizard_form">
+            <field name="name">Demande d'affectation de Odoo version</field>
+            <field name="model">instance.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Affectation">
+                    <group>
+                        <group>
+                            <field name="odoo_version_id" required="1"/>
+                        </group>
+                        <group>
+                            <field name="partner_ids" widget="many2many_tags" options="{'color_field': 'id'}"/>
+                        </group>
+                    </group>
+                    <footer>
+                        <button name="apply_odoo_version"
+                                string="Apply"
+                                class="btn-primary"
+                                type="object"/>
+                        <button string="Cancel" class="btn-default" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="instance_wizard_launch" model="ir.actions.act_window">
+            <field name="name">Affect Odoo version</field>
+            <field name="res_model">instance.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="context">{'default_partner_ids': active_ids}</field>
+            <field name="target">new</field>
+            <field name="binding_model_id" ref="base.model_res_partner"/>
+        </record>
+
+    </data>
+</odoo>

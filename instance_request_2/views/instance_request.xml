@@ -8,7 +8,7 @@
             <field name="arch" type="xml">
                 <search>
                     <field name="name"/>
-                    <field name="adress_ip"/>
+                    <field name="address_ip"/>
                     <field name="active"/>
                     <field name="cpu"/>
                     <field name="ram"/>
@@ -74,7 +74,8 @@
                                 <field name="active" attrs="{'readonly':[('state','=','done')]}"/>
                             </group>
                             <group>
-                                <field name="adress_ip" attrs="{'invisible':['|',('state','=','draft'),'|',('state','=','submitted'),('state','=','in_process')],}"/>
+                                <field name="address_ip"
+                                       attrs="{'invisible':['|',('state','=','draft'),'|',('state','=','submitted'),('state','=','in_process')],}"/>
                                 <field name="url" attrs="{'readonly':[('state','=','done')]}"/>
                             </group>
                             <group>

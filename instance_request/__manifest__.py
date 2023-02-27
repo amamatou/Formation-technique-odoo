@@ -19,21 +19,27 @@
     'version': '16.0',
 
     # any module necessary for this one to work correctly
-    'depends': ['base','mail','contacts','sale_management'],
+    'depends': ['base', 'mail', 'contacts', 'sale_management', 'hr'],
 
     # always loaded
     'data': [
         'security/security.xml',
         'security/ir.model.access.csv',
-        #'views/views.xml',
-        #'views/templates.xml',
+        'wizard/instance_wizard.xml',
+        'wizard/instance_bon_wizard.xml',
+        # 'views/views.xml',
+        # 'views/templates.xml',
         'views/instance_request.xml',
         'views/odoo_version.xml',
-        #'reports/rapport.xml',
+        'views/res_partner.xml',
+        'views/hr_employee.xml',
+        'views/devis.xml',
+        # 'reports/rapport.xml',
         'data/version_odoo.xml',
         'data/instance_request_to_process.xml',
         'data/create_instance_mail_template.xml',
         'data/instance_created_mail_template.xml',
+        'data/perimeters.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

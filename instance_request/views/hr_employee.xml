@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="view_hr_employee_form_inherit">
+            <field name="name">hr.employee.form.inherit</field>
+            <field name="model">hr.employee</field>
+            <field name="inherit_id" ref="hr.view_employee_form"/>
+            <field name="arch" type="xml">
+<!--                <field name="category_id" position="after">-->
+<!--                    <field name="odoo_version_id" required="1"/>-->
+<!--                </field>-->
+                <xpath expr="//field[@name='coach_id']" position="after">
+                   <button name="employee_instance_requests"
+                                string="Instances"
+                                class="btn-primary"
+                                type="object"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

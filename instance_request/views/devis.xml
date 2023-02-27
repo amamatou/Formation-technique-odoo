@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data>
+        <!--search-->
+        <record model="ir.ui.view" id="view_sale_order_search_inherit">
+            <field name="name">sale.order.search.inherit.quotation.inherit</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.sale_order_view_search_inherit_quotation"/>
+            <field name="arch" type="xml">
+                <filter name="my_quotation" position="before">
+                    <filter string="Odoo Version" name="group_by_version_odoo_id"
+                            context="{'group_by': 'version_odoo_id'}"/>
+                </filter>
+            </field>
+        </record>
+
+        <!--        form-->
+        <record model="ir.ui.view" id="view_sale_order_form_inherit">
+            <field name="name">sale.order.form.inherit</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='partner_id']" position="after">
+                    <field name="version_odoo_id" required="1"/>
+                </xpath>
+            </field>
+        </record>
+
+        <!--        list-->
+        <record model="ir.ui.view" id="view_sale_order_tree_inherit">
+            <field name="name">sale.order.tree.inherit</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_quotation_tree_with_onboarding"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='partner_id']" position="after">
+                    <field name="version_odoo_id"/>
+                </xpath>
+                <xpath expr="//field[@name='name']" position="before">
+                    <header>
+                        <button name="%(instance_request.instance_bon_wizard_launch)d"
+                                class="oe_highlight"
+                                type="action"
+                                string="Creer des instances"/>
+                    </header>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
