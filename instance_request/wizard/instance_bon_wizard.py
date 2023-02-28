@@ -19,7 +19,7 @@ class InstanceBonWizard(models.TransientModel):
     @api.model
     def create_instance(self):
         for record in self:
-            if record.cpu <= record.ram <= record.disk < 0 or record.cpu == record.ram == record.disk == False:
+            if record.cpu == record.ram == record.disk == False or record.cpu <= record.ram <= record.disk < 0:
                 raise ValidationError("You can't ask for instance requests with zero performances !")
             list_instances_created = []
             for sale_order in record.sale_order_ids:

@@ -1,5 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-instance_request.access_instance_request_user,access_instance_request_user,instance_request.model_instance_request,instance_request.group_user,1,0,1,0
-instance_request.access_instance_request_manager,access_instance_request_manager,instance_request.model_instance_request,instance_request.group_manager,1,1,1,1
-instance_request.access_odoo_version,access_odoo_version,instance_request.model_odoo_version,instance_request.group_user,1,0,0,0
-instance_request.access_odoo_version,access_odoo_version,instance_request.model_odoo_version,instance_request.group_manager,1,1,1,1

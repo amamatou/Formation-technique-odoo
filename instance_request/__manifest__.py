@@ -27,6 +27,7 @@
         'security/ir.model.access.csv',
         'wizard/instance_wizard.xml',
         'wizard/instance_bon_wizard.xml',
+        'wizard/instance_to_draft_wizard.xml',
         'views/instance_request.xml',
         'views/odoo_version.xml',
         'views/res_partner.xml',

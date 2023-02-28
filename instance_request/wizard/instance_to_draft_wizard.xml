@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data>
+        <!-- form view -->
+        <record model="ir.ui.view" id="instance_to_draft_wizard_form">
+            <field name="name">Set instance to draft</field>
+            <field name="model">instance.to.draft.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Set to draft">
+                    <group>
+                        <group>
+                            <field name="instance_ids" widget="many2many_tags" options="{'color_field': 'id'}"/>
+                        </group>
+                    </group>
+                    <footer>
+                         <button name="set_to_draft"
+                                string="Set to draft"
+                                class="btn-primary"
+                                type="object"/>
+                        <button string="Cancel" class="btn-default" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+         <record id="instance_to_draft_wizard_launch" model="ir.actions.act_window">
+            <field name="name">Set state to draft</field>
+            <field name="res_model">instance.to.draft.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="context">{'default_instance_ids': active_ids}</field>
+            <field name="target">new</field>
+            <field name="binding_model_id" ref="instance_request.model_instance_request"/>
+        </record>
+
+    </data>
+</odoo>

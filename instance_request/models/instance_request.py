@@ -15,7 +15,7 @@ class InstanceRequest(models.Model):
         # ('unique_name', 'unique (name)', 'Name already exists!')
     ]
 
-    name = fields.Char(string="Designation", required=True, tracking=True, default="New")
+    name = fields.Char(string="Designation", tracking=True, default="New")
     address_ip = fields.Char(string="IP Address")
     active = fields.Boolean(string="Active", default=True)
     cpu = fields.Char(string="CPU")
@@ -40,13 +40,14 @@ class InstanceRequest(models.Model):
 
     partner_id = fields.Many2one("res.partner", string="Customer")
     tl_id = fields.Many2one("hr.employee", string="Employee")
-    tl_user_id = fields.Many2one("", string="User on employee")
+    tl_user_id = fields.Many2one(related="tl_id.user_id")
     perimeters_ids = fields.Many2many("perimeters", string="Perimeters")
 
     color = fields.Selection(selection=[
         ('green', 'Green'),
         ('yellow', 'Yellow'),
-        ('red', 'Red')], string="Color", default="red", tracking=True)
+        ('red', 'Red'),
+        ('black', 'Black')], string="Color", default="black", tracking=True)
 
     @api.depends("requests_line_ids")
     def _compute_nb_lines(self):
@@ -60,12 +61,14 @@ class InstanceRequest(models.Model):
     def action_draft(self):
         for record in self:
             record.state = 'draft'
-        template = self.env.ref('instance_request.instance_request_creation')
-        template.send_mail(record.id,
-                           email_values={'email_to': record.create_uid.email, 'email_from': self.env.user.email})
 
     def action_submit(self):
         for record in self:
+            if record.state == 'draft':
+                template = self.env.ref('instance_request.instance_request_creation')
+                template.send_mail(record.id,
+                                   email_values={'email_to': record.create_uid.email,
+                                                 'email_from': self.env.user.email})
             get_if_submit = self.env.context.get('get_if_submit', False)
             print("==========>  ", get_if_submit)
             record.state = 'submitted'

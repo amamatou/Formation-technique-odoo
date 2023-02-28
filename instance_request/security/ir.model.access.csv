@@ -7,3 +7,4 @@ instance_request.access_instance_request_line,access_instance_request_line,insta
 instance_request.access_perimeters,access_perimeters,instance_request.model_perimeters,,1,1,1,1
 instance_request.access_instance_wizard,access_instance_wizard,instance_request.model_instance_wizard,,1,1,1,1
 instance_request.access_instance_bon_wizard,access_instance_bon_wizard,instance_request.model_instance_bon_wizard,,1,1,1,1
+instance_request.access_instance_to_draft_wizard,access_instance_to_draft_wizard,instance_request.model_instance_to_draft_wizard,,1,1,1,1
