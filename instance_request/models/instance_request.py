@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, api
-from datetime import timedelta, date
+from datetime import timedelta, date, datetime
 import pprint
 from odoo.exceptions import UserError, ValidationError
 
@@ -24,7 +24,7 @@ class InstanceRequest(models.Model):
     url = fields.Char(string="URL")
     limit_date = fields.Date(string="Processing deadline", tracking=True)
     treat_date = fields.Datetime(string="Processing date")
-    treat_duration = fields.Float(string="Processing duration")
+    treat_duration = fields.Float(string="Processing duration", compute="_compute_treat_duration")
     state = fields.Selection([
         ("draft", "Draft"),
         ("submitted", "Submitted"),
@@ -33,7 +33,7 @@ class InstanceRequest(models.Model):
     ], string="State", default="draft", tracking=True)
 
     odoo_version_id = fields.Many2one("odoo.version", string="Odoo Version")
-    # odoo_version_ids = fields.Many2many("odoo.version", string="Odoo Versions")
+    odoo_version_ids = fields.Many2many("odoo.version", string="Odoo Versions")
     requests_line_ids = fields.One2many("instance.request.line", "instance_id", string="Instance request line")
 
     nb_lines = fields.Integer(string="Nb Lines", compute="_compute_nb_lines", store=1)
@@ -41,6 +41,7 @@ class InstanceRequest(models.Model):
     partner_id = fields.Many2one("res.partner", string="Customer")
     tl_id = fields.Many2one("hr.employee", string="Employee")
     tl_user_id = fields.Many2one("", string="User on employee")
+    perimeters_ids = fields.Many2many("perimeters", string="Perimeters")
 
     color = fields.Selection(selection=[
         ('green', 'Green'),
@@ -51,6 +52,10 @@ class InstanceRequest(models.Model):
     def _compute_nb_lines(self):
         for record in self:
             record.nb_lines = len(record.requests_line_ids)
+
+    def _compute_treat_duration(self):
+        for record in self:
+            record.treat_duration = (record.limit_date - date.today()).days
 
     def action_draft(self):
         for record in self:
@@ -153,7 +158,7 @@ class InstanceRequest(models.Model):
     def increase_treat_date(self):
         for record in self:
             if record.treat_date:
-                record.treat_date = record.treat_date + timedelta(hours=record.treat_duration)
+                record.treat_date = record.treat_date + timedelta(days=record.treat_duration)
 
     # depends acts after the backup
     # constraints acts before the backup
@@ -161,8 +166,9 @@ class InstanceRequest(models.Model):
     @api.onchange('limit_date')
     def limit_date_exception(self):
         for record in self:
-            if (not record.limit_date) and (date.today() > record.limit_date):
-                raise UserError("You can't define a limit date before today !")
+            if record.limit_date:
+                if date.today() > record.limit_date:
+                    raise UserError("You can't define a limit date before today !")
 
     @api.depends('limit_date')
     def limit_date_activity(self):
