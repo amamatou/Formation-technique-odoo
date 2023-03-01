@@ -5,7 +5,7 @@ from odoo import models, fields, api
 
 class OdooVersion(models.Model):
     _name = "odoo.version"
-    _description = "Versions de Odoo"
+    _description = "Odoo versions"
 
     name = fields.Char(string="Version")
     current_version = fields.Boolean(string="Current version")

@@ -13,12 +13,12 @@
             <!--            <field name="subject">${object.amc}</field>-->
             <field name="body_html" type="html">
                 <div>
-                    <p>Bonjour,
+                    <p>Good morning,
                         <br/>
                         <br/>
-                        <span style="padding:0 0 0 20px;">Votre instance
+                        <span style="padding:0 0 0 20px;">Your instance
                             <t t-out="object.name"/>
-                            a bien été crée. Elle est accessble sur le lien
+                            have been created. It's accessible in the following link
                             <t t-out="object.address_ip"/>
                         </span>
                     </p>

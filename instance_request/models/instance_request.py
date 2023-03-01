@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, fields, api
+from odoo import models, fields, api, _
 from datetime import timedelta, date, datetime
 import pprint
 from odoo.exceptions import UserError, ValidationError
@@ -24,7 +24,7 @@ class InstanceRequest(models.Model):
     url = fields.Char(string="URL")
     limit_date = fields.Date(string="Processing deadline", tracking=True)
     treat_date = fields.Datetime(string="Processing date")
-    treat_duration = fields.Float(string="Processing duration", compute="_compute_treat_duration")
+    treat_duration = fields.Float(string=_("Processing duration"), compute="_compute_treat_duration")
     state = fields.Selection([
         ("draft", "Draft"),
         ("submitted", "Submitted"),
@@ -49,6 +49,8 @@ class InstanceRequest(models.Model):
         ('red', 'Red'),
         ('black', 'Black')], string="Color", default="black", tracking=True)
 
+    activity_bool = False
+
     @api.depends("requests_line_ids")
     def _compute_nb_lines(self):
         for record in self:
@@ -72,43 +74,37 @@ class InstanceRequest(models.Model):
             get_if_submit = self.env.context.get('get_if_submit', False)
             print("==========>  ", get_if_submit)
             record.state = 'submitted'
+            self.activity_unlink(['instance_request.instance_request_to_process_activity'])
 
     def action_progress(self):
         for record in self:
             record.state = 'in_process'
-            # point on the group, retrieve the id of the group
-            user_group = self.env.ref('instance_request.instance_request_group_manager')
-            print("==========> group:  ", user_group)
-            users = user_group.users
-            for user in users:
-                print("======> name: ", user.name)
-
-            user_connected = self.env.user
-            print("==========> user connected:  ", user_connected)
-            has_user_group = user_connected.has_group('instance_request.instance_request_group_manager')
-            print("==========> He belongs to the group manager?  ", has_user_group)
-
-            model_access = user_group.model_access
-            print('============== model access =================')
-            for access in model_access:
-                print("======> ", access.name, access.perm_create, access.perm_write, access.perm_read,
-                      access.perm_unlink)
-
-            remaining_days = record.limit_date - date.today()
+            # remaining_days = record.limit_date - date.today()
             users = self.env.ref('instance_request.instance_request_group_manager').users
             for user in users:
                 self.activity_schedule(
                     'instance_request.instance_request_to_process_activity',
-                    note=('Instance request in process, deadline in %s days.' % remaining_days),
-                    user_id=user.id
+                    note='Instance request in process',
+                    user_id=user.id,
+                    date_deadline=record.limit_date
                 )
-            # self.activity_schedule(
-            #     'mail.mail_activity_data_meeting',
-            #     summary='This is an automatically generated activitty',
-            #     note='Some meeting you have to attend',
-            #     date_deadline=datetime.datetime.today() + datetime.timedelta(days=5),
-            #     user_id=self.env.user.id
-            # )
+            # point on the group, retrieve the id of the group
+            # user_group = self.env.ref('instance_request.instance_request_group_manager')
+            # print("==========> group:  ", user_group)
+            # users = user_group.users
+            # for user in users:
+            #     print("======> name: ", user.name)
+
+            # user_connected = self.env.user
+            # print("==========> user connected:  ", user_connected)
+            # has_user_group = user_connected.has_group('instance_request.instance_request_group_manager')
+            # print("==========> He belongs to the group manager?  ", has_user_group)
+
+        # model_access = user_group.model_access
+        # print('============== model access =================')
+        # for access in model_access:
+        #     print("======> ", access.name, access.perm_create, access.perm_write, access.perm_read,
+        #           access.perm_unlink)
 
     def action_done(self):
         for record in self:
@@ -126,8 +122,8 @@ class InstanceRequest(models.Model):
 
     @api.model
     def set_submit_with_limit_date(self):
-        allrecords = self.search([])
-        for record in allrecords:
+        all_records = self.search([])
+        for record in all_records:
             if (record.limit_date - timedelta(days=5)) <= date.today() < (
                     record.limit_date + timedelta(days=6)) and record.state == "draft":
                 record.state = "submitted"
@@ -173,17 +169,13 @@ class InstanceRequest(models.Model):
                 if date.today() > record.limit_date:
                     raise UserError("You can't define a limit date before today !")
 
-    @api.depends('limit_date')
+    @api.onchange('limit_date')
     def limit_date_activity(self):
         for record in self:
-            remaining_days = record.limit_date - date.today()
-            users = self.env.ref('instance_request.instance_request_group_manager').users
-            for user in users:
-                self.activity_schedule(
-                    'instance_request.instance_request_to_process_activity',
-                    note=('processing deadline have been changed, deadline in %s days.' % remaining_days),
-                    user_id=user.id
-                )
+            record.activity_reschedule(
+                ['instance_request.instance_request_to_process_activity'],
+                date_deadline=record.limit_date
+            )
 
     def unlink(self):
         for record in self:

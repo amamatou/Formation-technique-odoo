@@ -3,15 +3,85 @@
     <data>
         <template id="instance_request_tmplt">
             <t t-call="web.html_container">
-                <t t-foreach="docs" t-as="o">
+                <t t-foreach="docs" t-as="doc">
                     <t t-call="web.external_layout">
+                        <t t-set="address">
+                            <div t-field="doc.partner_id"
+                                 t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": True}'/>
+                        </t>
                         <div class="page">
-                            <h2>Report title</h2>
+                            <div class="oe_structure"/>
+                            <h2 class="mt-4">
+                                Name:
+                                <span t-field="doc.name"/>
+                            </h2>
+                            <div class="row mt-4 mb-4" id="informations">
+                                <div t-if="doc.odoo_version_id" class="col-auto col-3 mw-100 mb-2"
+                                     name="odoo_version_id">
+                                    <strong>Your Odoo version:</strong>
+                                    <p class="m-0" t-field="doc.odoo_version_id"/>
+                                </div>
+                                <div t-if="doc.limit_date" class="col-auto col-3 mw-100 mb-2" name="limit_date">
+                                    <strong>Limit date:</strong>
+                                    <p class="m-0" t-field="doc.limit_date" t-options='{"widget":"date"}'/>
+                                </div>
+                                <div t-if="doc.ram" class="col-auto col-3 mw-100 mb-2" name="ram">
+                                    <strong>RAM:</strong>
+                                    <p class="m-0" t-field="doc.ram"/>
+                                </div>
+                                <div t-if="doc.cpu" class="col-auto col-3 mw-100 mb-2" name="cpu">
+                                    <strong>CPU:</strong>
+                                    <p class="m-0" t-field="doc.cpu"/>
+                                </div>
+                            </div>
+
+                            <table class="table table-sm o_main_table mt-4">
+                                <thead style="display: table-row-group">
+                                    <tr>
+                                        <th name="th_description" class="text-start">Description</th>
+                                        <th name="th_version" class="text-start">Odoo version</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="sale_tbody">
+                                    <t t-foreach="doc.requests_line_ids" t-as="line">
+                                        <tr>
+                                            <td name="td_name">
+                                                <span t-field="line.name"/>
+                                            </td>
+                                            <td name="td_name">
+                                                <span t-field="line.odoo_version_id"/>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+
+                            <div class="clearfix" name="so_total_summary">
+                                <div id="total" class="row" name="total">
+                                    <div t-attf-class="#{'col-6' if report_type != 'html' else 'col-sm-7 col-md-6'} ms-auto">
+                                        <table class="table table-sm">
+                                            <!-- Tax totals -->
+                                            <tr>
+                                                <td>Nb Lines</td>
+                                                <td><span t-out="doc.nb_lines"/>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </t>
                 </t>
             </t>
         </template>
+
+         <template id="instance_request_tmplt_inherit" inherit_id="instance_request_tmplt">
+            <xpath expr="//div[@name='limit_date']" position="attributes">
+                <attribute name="t-if">False</attribute>
+            </xpath>
+        </template>
+
         <record id="instance_request_report" model="ir.actions.report">
             <field name="name">Instance request</field>
             <field name="model">instance.request</field>

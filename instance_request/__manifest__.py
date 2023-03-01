@@ -39,6 +39,7 @@
         'data/instance_created_mail_template.xml',
         'data/perimeters.xml',
         'data/instance_sequence.xml',
+        'reports/instance_request_report.xml'
     ],
     # only loaded in demonstration mode
     'demo': [
