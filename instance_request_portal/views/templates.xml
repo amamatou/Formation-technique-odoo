@@ -1,0 +1,71 @@
+<odoo>
+    <data>
+        <template id="portal_my_home_menu_instances" name="Portal layout : instances menu entries"
+                  inherit_id="portal.portal_breadcrumbs" priority="20">
+            <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+                <li t-if="page_name == 'instances'"
+                    t-attf-class="breadcrumb-item #{'active ' if not instances else ''}">
+                    <a t-if="instances" t-attf-href="/my/instances?{{ keep_query() }}">Instances</a>
+                    <t t-else="">Instances</t>
+                </li>
+                <li t-if="instances" class="breadcrumb-item active">
+                    <t t-out="instances.name"/>
+                </li>
+            </xpath>
+        </template>
+
+        <template id="portal_my_home_instances" name="Show Instances" customize_show="True"
+                  inherit_id="portal.portal_my_home" priority="20">
+            <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+                <t t-call="portal.portal_docs_entry">
+                    <t t-set="title">Instances</t>
+                    <t t-set="url" t-value="'/my/instances'"/>
+                    <t t-set="placeholder_count" t-value="'instances_count'"/>
+                </t>
+            </xpath>
+        </template>
+
+        <template id="portal_my_instances" name="My Instances">
+            <t t-call="portal.portal_layout">
+                <t t-set="breadcrumbs_searchbar" t-value="True"/>
+
+                <t t-call="portal.portal_searchbar">
+                    <t t-set="title">Instances</t>
+                </t>
+                <t t-if="instances" t-call="portal.portal_table">
+                    <thead>
+                        <tr class="active">
+                            <th>Name #</th>
+                            <th class="text-center">Created By</th>
+                            <th class="text-center">Odoo Version</th>
+                            <th class="text-center">Limit date</th>
+                            <th class="text-center">State</th>
+                        </tr>
+                    </thead>
+                    <t t-foreach="instances" t-as="instance">
+                        <tr>
+                            <td>
+                                <a t-att-href="">
+                                    <t t-out="instance.name"/>
+                                </a>
+                            </td>
+                            <td class="text-center">
+                                <span t-field="instance.create_uid"/>
+                            </td>
+                            <td class="text-center">
+                                <span t-field="instance.odoo_version_id"/>
+                            </td>
+                            <td class="text-center">
+                                <span t-field="instance.limit_date"/>
+                            </td>
+                            <td class="text-center">
+                                <span t-field="instance.state"/>
+                            </td>
+                        </tr>
+                    </t>
+                </t>
+                <p t-else="">There are currently no instances for your account.</p>
+            </t>
+        </template>
+    </data>
+</odoo>
