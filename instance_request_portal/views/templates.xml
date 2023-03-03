@@ -1,19 +1,6 @@
 <odoo>
     <data>
-        <template id="portal_my_home_menu_instances" name="Portal layout : instances menu entries"
-                  inherit_id="portal.portal_breadcrumbs" priority="20">
-            <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
-                <li t-if="page_name == 'instances'"
-                    t-attf-class="breadcrumb-item #{'active ' if not instances else ''}">
-                    <a t-if="instances" t-attf-href="/my/instances?{{ keep_query() }}">Instances</a>
-                    <t t-else="">Instances</t>
-                </li>
-                <li t-if="instances" class="breadcrumb-item active">
-                    <t t-out="instances.name"/>
-                </li>
-            </xpath>
-        </template>
-
+        <!--        We inherit the principal menu and add instance request portal-->
         <template id="portal_my_home_instances" name="Show Instances" customize_show="True"
                   inherit_id="portal.portal_my_home" priority="20">
             <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
@@ -24,6 +11,22 @@
                 </t>
             </xpath>
         </template>
+
+        <!--        Our instance request portal Menu -->
+        <template id="portal_my_home_menu_instances" name="Portal layout : instances menu entries"
+                  inherit_id="portal.portal_breadcrumbs" priority="20">
+            <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+                <li t-if="page_name == 'instances'"
+                    t-attf-class="breadcrumb-item #{'active ' if not instances else ''}">
+                    <a t-if="instances" t-attf-href="/my/instances?{{ keep_query() }}">Instances</a>
+                    <t t-else="">Instances</t>
+                </li>
+                <!--<li t-if="instances" class="breadcrumb-item active">
+                        <t t-out="instances.name"/>
+                </li>-->
+            </xpath>
+        </template>
+
 
         <template id="portal_my_instances" name="My Instances">
             <t t-call="portal.portal_layout">
@@ -37,8 +40,10 @@
                         <tr class="active">
                             <th>Name #</th>
                             <th class="text-center">Created By</th>
+                            <th class="text-center">Customer</th>
                             <th class="text-center">Odoo Version</th>
                             <th class="text-center">Limit date</th>
+                            <th class="text-center">URL</th>
                             <th class="text-center">State</th>
                         </tr>
                     </thead>
@@ -53,10 +58,16 @@
                                 <span t-field="instance.create_uid"/>
                             </td>
                             <td class="text-center">
+                                <span t-field="instance.partner_id"/>
+                            </td>
+                            <td class="text-center">
                                 <span t-field="instance.odoo_version_id"/>
                             </td>
                             <td class="text-center">
                                 <span t-field="instance.limit_date"/>
+                            </td>
+                            <td class="text-center">
+                                <span t-field="instance.url"/>
                             </td>
                             <td class="text-center">
                                 <span t-field="instance.state"/>
