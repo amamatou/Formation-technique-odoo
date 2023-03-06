@@ -15,6 +15,8 @@ from odoo.addons.portal.controllers.mail import _message_post_helper
 from odoo.addons.portal.controllers import portal
 from odoo.addons.portal.controllers.portal import pager as portal_pager
 from odoo.osv.expression import OR, AND
+from odoo.tools import groupby as groupbyelem
+from operator import itemgetter
 
 
 class CustomerPortal(portal.CustomerPortal):
@@ -39,21 +41,25 @@ class CustomerPortal(portal.CustomerPortal):
             search_domain = OR([search_domain, [('state', 'ilike', search)]])
         return search_domain
 
+    def _instance_get_groupby_mapping(self):
+        return {
+            'state': 'state'
+        }
+
     def _prepare_instances_values(
-            self, page=1, date_begin=None, date_end=None, filterby='all', sortby=None, search=None, search_in='all',
+            self, page=1, date_begin=None, date_end=None, sortby=None, filterby='all', search=None, search_in="all", groupby='none',
             quotation_page=False, **kwargs
-        ):
-        values = self._prepare_portal_layout_values()
+    ):
         InstanceRequest = request.env['instance.request']
 
+        if not sortby:
+            sortby = 'name'
+        values = self._prepare_portal_layout_values()
         url = "/my/instances"
         domain = [('create_uid', '=', request.env.user.id)]
 
-        # if date_begin and date_end:
-        #     domain += [('create_date', '>', date_begin), ('create_date', '<=', date_end)]
-
         searchbar_sortings = {
-            'limit_date': {'label': _('Limit Date'), 'order': 'limit_date asc'},
+            'limit_date': {'label': _('Limit Date'), 'order': 'limit_date desc'},
             'name': {'label': _('Designation'), 'order': 'name'},
             'state': {'label': _('State'), 'order': 'state'},
         }
@@ -62,16 +68,20 @@ class CustomerPortal(portal.CustomerPortal):
             'all': {'label': _('All'), 'domain': []},
             'partner_id': {'label': _('Customer'), 'domain': [("partner_id", "!=", False)]},
             'url': {'label': _('URL'), 'domain': [("url", "!=", False)]},
-            'state': {'label': _('State'), 'domain': [("state", "!=", False)]},
+            'odoo_version_id': {'label': _('Odoo version'), 'domain': [("odoo_version_id", "!=", False)]},
         }
 
         searchbar_inputs = {
-            'all': {'input': 'all', 'label': _('Search in All')},
-            'partner_id': {'label': _('Search in Customer'), 'input': 'partner_id'},
+            'all': {'label': _('Search in all'), 'input': 'all'},
+            'partner_id': {'label': _('Search in customer'), 'input': 'partner_id'},
             'url': {'label': _('Search in URL'), 'input': 'url'},
-            'state': {'label': _('Search in State'), 'input': 'state'}
+            'state': {'label': _('Search in state'), 'input': 'state'},
         }
 
+        searchbar_groupby = {
+            'none': {'label': _('None'), 'input': 'none'},
+            'state': {'label': _('State'), 'input': 'state'},
+        }
         # default sort by value
         if not sortby:
             sortby = 'name'
@@ -84,37 +94,74 @@ class CustomerPortal(portal.CustomerPortal):
 
         # search
         if search and search_in:
-            domain += self._get_search_domain(search_in, search)
+            domain = AND([domain, self._get_search_domain(search_in, search)])
+
+        #groupby
+        # groupby_mapping = self._instance_get_groupby_mapping()
+        # groupby_field = groupby_mapping.get(groupby, None)
+        # if groupby_field is not None and groupby_field not in InstanceRequest.sudo()._fields:
+        #     raise ValueError(_("The field '%s' does not exist in the targeted model", groupby_field))
+        # sort_order = '%s, %s' % (groupby_field, sort_order) if groupby_field else sort_order
+
+        # content according to pager and archive selected
+        if groupby == 'state':
+            sort_order = 'state, %s' % sort_order
+
 
         pager_values = portal_pager(
             url=url,
             total=InstanceRequest.search_count(domain),
             page=page,
             step=self._items_per_page,
-            url_args={'date_begin': date_begin, 'date_end': date_end, 'sortby': sortby, 'filterby': filterby, 'search_in': search_in, 'search': search},
+            url_args={
+                # 'date_begin': date_begin, 'date_end': date_end,
+                'sortby': sortby, 'filterby': filterby,'search_in': search_in, 'search': search
+            },
         )
         instances = InstanceRequest.search(domain, order=sort_order, limit=self._items_per_page,
                                            offset=pager_values['offset'])
 
+        if groupby == 'state':
+            grouped_instances = [InstanceRequest.concat(*g)
+                                  for k, g in groupbyelem(instances, itemgetter('state'))]
+        else:
+            grouped_instances = [instances]
+
         values.update({
-            'date': date_begin,
+            # 'date': date_begin,
             'instances': instances.sudo(),
+            'grouped_instances': grouped_instances,
             'page_name': 'instances',
             'pager': pager_values,
             'default_url': url,
             'searchbar_sortings': searchbar_sortings,
             'searchbar_filters': OrderedDict(sorted(searchbar_filters.items())),
             'searchbar_inputs': searchbar_inputs,
+            'searchbar_groupby': searchbar_groupby,
             'sortby': sortby,
             'filterby': filterby,
             'search_in': search_in,
             'search': search,
+            'groupby': groupby,
         })
 
         return values
 
+    @http.route(['/my/instances', '/my/instances/page/<int:page>'], type='http', auth="user", website=True)
+    def portal_my_instances(self, **kwargs):
+        values = self._prepare_instances_values(quotation_page=True, **kwargs)
+        return request.render("instance_request_portal.portal_my_instances", values)
 
-@http.route(['/my/instances', '/my/instances/page/<int:page>'], type='http', auth="user", website=True)
-def portal_my_instances(self, **kwargs):
-    values = self._prepare_instances_values(quotation_page=True, **kwargs)
-    return request.render("instance_request_portal.portal_my_instances", values)
+    @http.route(['/my/instances/form'], type='http', auth="user", website=True)
+    def portal_my_instances_form(self, **post):
+        #return request.render("instance_request_portal.portal_my_instances_form")
+        print(">>>>>>>>>>>>>>>>>> Instance <<<<<<<<<<<<<<<<<<<<<<<<")
+        if post:
+            instance = post["instance"]
+
+
+    # @http.route('/my/instances/<model("instance_request.instance_request"):obj>', type='http', auth="user", website=True)
+    # def portal_my_instances_form_view(self, obj, **kw):
+    #     return request.render('instance_request_portal.portal_my_instances_form_view', {
+    #         'instance': obj
+    #     })
