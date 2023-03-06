@@ -1,8 +1,8 @@
 <odoo>
     <data>
-         <record id="menu_instance_creation" model="website.menu">
-            <field name="name">My Instance Request</field>
-            <field name="url">/Create_instance</field>
+        <record id="menu_instance_creation" model="website.menu">
+            <field name="name">Instance Request</field>
+            <field name="url">/my/instances</field>
             <field name="parent_id" ref="website.main_menu"/>
             <field name="sequence">50</field>
         </record>
@@ -28,13 +28,76 @@
                     <a t-if="instances" t-attf-href="/my/instances?{{ keep_query() }}">Instances</a>
                     <t t-else="">Instances</t>
                 </li>
-                <!--<li t-if="page_name == 'instance_details'" class="breadcrumb-item active">
-                    Details
+   <!--             <li t-if="instances" t-attf-href="/my/instances?{{ keep_query() }}" class="breadcrumb-item active">
+                    <t t-field="instances.name"/>
                 </li>-->
-                <!--<li t-if="instances" class="breadcrumb-item active">
-                        <t t-out="instances.name"/>
-                </li>-->
+                 <span t-if="page_name == 'instances'" style="margin-left: 7.9cm">
+                    <a id="submit-ticket" t-attf-href="/my/instances/create">
+                        <button class="btn btn-secondary" style="height:0.8cm; padding:4px">
+                            <center>Create an Instance</center>
+                        </button>
+                    </a>
+                </span>
             </xpath>
+        </template>
+
+         <template id="create_instance" name="First page">
+            <t t-call="website.layout">
+                <div id="wrap">
+                    <section class="s_title parallax s_parallax_is_fixed bg-black-50 pt24 pb24" data-vcss="001"
+                             data-snippet="s_title" data-scroll-background-ratio="1">
+                        <span class="s_parallax_bg oe_img_bg"
+                              style="background-image: url('/web/image/website.s_banner_default_image'); background-position: 50% 0;"/>
+                        <div class="o_we_bg_filter bg-black-50"/>
+                        <div class="container">
+                            <h1>Create instance</h1>
+                        </div>
+                    </section>
+                    <br></br>
+                    <div class="oe_structure">
+                        <div class="container">
+                            <div class="div1" style="display: inine-block">
+                                <form role="form" action="/my/instances/create_request" method="POST">
+                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                    <input type="hidden" name="state" value="submitted"/>
+                                    <input type="hidden" name="name" value="New"/>
+                                    <div class="form-group">
+                                        <label for="url">URL</label>
+                                        <input class="form-control" style="width : 13cm" name="url"/>
+                                    </div>
+                                    <br></br>
+                                    <div class="form-group">
+                                        <label for="cpu">CPU</label>
+                                        <input class="form-control" type="text" style="width : 13cm" name="cpu"/>
+                                    </div>
+                                    <br></br>
+                                    <div class="form-group">
+                                        <label for="ram">RAM</label>
+                                        <input class="form-control" type="text" style="width : 13cm" name="ram"/>
+                                    </div>
+                                    <br></br>
+                                    <div class="form-group">
+                                        <label for="disk">DISK</label>
+                                        <input class="form-control" type="text" style="width : 13cm" name="disk"/>
+                                    </div>
+                                    <br></br>
+                                    <div class="form-group">
+                                        <label for="limit_date">Limit Date</label>
+                                        <input class="form-control" type="date" style="width : 13cm" name="limit_date"/>
+                                    </div>
+                                    <br></br>
+                                    <div class="clearfix oe_login_buttons">
+                                        <button type="submit" class="btn btn-primary pull-left">Create Instance</button>
+                                    </div>
+                                    <br></br>
+                                </form>
+                                <div class="div2" style="position: inline-block">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </t>
         </template>
 
 
@@ -97,89 +160,6 @@
             </t>
         </template>
 
-        <template id="portal_my_instances_fields">
-            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-            <div t-if="error_message" class="alert alert-danger" role="alert">
-                <div class="col-lg-12">
-                    <t t-foreach="error_message" t-as="err">
-                        <t t-esc="err"/>
-                        <br/>
-                    </t>
-                </div>
-            </div>
-            <div t-attf-class="mb-3 #{error.get('name') and 'o_has_error' or ''} col-xl-6">
-                <label class="col-form-label" for="name">Name</label>
-                <input type="text" name="name" t-attf-class="form-control #{error.get('name') and 'is-invalid' or ''}"
-                       t-att-value="name or instance.name"/>
-            </div>
-            <div t-attf-class="mb-3 #{error.get('create_uid') and 'o_has_error' or ''} col-xl-6">
-                <label class="col-form-label" for="create_uid">Created By</label>
-                <input type="text" name="create_uid"
-                       t-attf-class="form-control #{error.get('create_uid') and 'is-invalid' or ''}"
-                       t-att-value="create_uid or instance.create_uid"/>
-            </div>
-            <div t-attf-class="mb-3 #{error.get('partner_id') and 'o_has_error' or ''} col-xl-6">
-                <label class="col-form-label" for="partner_id">Customer</label>
-                <input type="text" name="partner_id" t-attf-class="form-control #{error.get('partner_id') and 'is-invalid' or ''}"
-                       t-att-value="partner_id or instance.partner_id"/>
-            </div>
-            <div t-attf-class="mb-3 #{error.get('odoo_version_id') and 'o_has_error' or ''} col-xl-6">
-                <label class="col-form-label" for="odoo_version_id">Odoo version</label>
-                <input type="text" name="odoo_version_id" t-attf-class="form-control #{error.get('odoo_version_id') and 'is-invalid' or ''}"
-                       t-att-value="odoo_version_id or instance.odoo_version_id"/>
-            </div>
-            <div t-attf-class="mb-3 #{error.get('limit_date') and 'o_has_error' or ''} col-xl-6">
-                <label class="col-form-label" for="limit_date">Limit date</label>
-                <input type="text" name="limit_date" t-attf-class="form-control #{error.get('limit_date') and 'is-invalid' or ''}"
-                       t-att-value="limit_date or instance.limit_date"/>
-            </div>
-            <div t-attf-class="mb-3 #{error.get('url') and 'o_has_error' or ''} col-xl-6">
-                <label class="col-form-label" for="url">URL</label>
-                <input type="text" name="url"
-                       t-attf-class="form-control #{error.get('url') and 'is-invalid' or ''}"
-                       t-att-value="url or instance.url"/>
-            </div>
-            <div t-attf-class="mb-3 #{error.get('state') and 'o_has_error' or ''} col-xl-6">
-                <label class="col-form-label" for="state">State</label>
-                <input type="text" name="state"
-                       t-attf-class="form-control #{error.get('state') and 'is-invalid' or ''}"
-                       t-att-value="state or instance.state"/>
-            </div>
-            <!--<div t-attf-class="mb-3 #{error.get('state') and 'o_has_error' or ''} col-xl-6">
-                <label class="col-form-label label-optional" for="state">State</label>
-                <select name="state" t-attf-class="form-select #{error.get('state') and 'is-invalid' or ''}">
-                    <option value="">select...</option>
-                    <t t-foreach="state or []" t-as="state">
-                        <option t-att-value="state.id" style="display:none;" t-att-data-country_id="state.country_id.id"
-                                t-att-selected="state.id == int(state_id) if state_id else state.id == partner.state_id.id">
-                            <t t-esc="state.name"/>
-                        </option>
-                    </t>
-                </select>
-            </div>-->
-        </template>
-
-        <template id="portal_my_instances_form" name="Instance request">
-            <t t-call="portal.portal_layout">
-                <t t-set="additional_title">Instance Request Details</t>
-                <form action="/my/instances/form" method="post">
-                    <div class="row o_portal_details">
-                        <div class="col-lg-8">
-                            <div class="row">
-                                <t t-call="portal.portal_my_instances_fields"/>
-                                <input type="hidden" name="redirect" t-att-value="redirect"/>
-                            </div>
-                            <div class="clearfix">
-                                <button type="submit" class="btn btn-primary float-end mb32 ">
-                                    Confirm
-                                    <span class="fa fa-long-arrow-right"/>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-            </t>
-        </template>
 
         <!--        <template id="portal_my_instances_form_view" name="My Instances">-->
         <!--            <xpath expr="//div[hasclass('o_portal_sidebar')]" position="inside">-->

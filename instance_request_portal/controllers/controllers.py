@@ -47,7 +47,8 @@ class CustomerPortal(portal.CustomerPortal):
         }
 
     def _prepare_instances_values(
-            self, page=1, date_begin=None, date_end=None, sortby=None, filterby='all', search=None, search_in="all", groupby='none',
+            self, page=1, date_begin=None, date_end=None, sortby=None, filterby='all', search=None, search_in="all",
+            groupby='none',
             quotation_page=False, **kwargs
     ):
         InstanceRequest = request.env['instance.request']
@@ -96,7 +97,7 @@ class CustomerPortal(portal.CustomerPortal):
         if search and search_in:
             domain = AND([domain, self._get_search_domain(search_in, search)])
 
-        #groupby
+        # groupby
         # groupby_mapping = self._instance_get_groupby_mapping()
         # groupby_field = groupby_mapping.get(groupby, None)
         # if groupby_field is not None and groupby_field not in InstanceRequest.sudo()._fields:
@@ -107,7 +108,6 @@ class CustomerPortal(portal.CustomerPortal):
         if groupby == 'state':
             sort_order = 'state, %s' % sort_order
 
-
         pager_values = portal_pager(
             url=url,
             total=InstanceRequest.search_count(domain),
@@ -115,7 +115,7 @@ class CustomerPortal(portal.CustomerPortal):
             step=self._items_per_page,
             url_args={
                 # 'date_begin': date_begin, 'date_end': date_end,
-                'sortby': sortby, 'filterby': filterby,'search_in': search_in, 'search': search
+                'sortby': sortby, 'filterby': filterby, 'search_in': search_in, 'search': search
             },
         )
         instances = InstanceRequest.search(domain, order=sort_order, limit=self._items_per_page,
@@ -123,7 +123,7 @@ class CustomerPortal(portal.CustomerPortal):
 
         if groupby == 'state':
             grouped_instances = [InstanceRequest.concat(*g)
-                                  for k, g in groupbyelem(instances, itemgetter('state'))]
+                                 for k, g in groupbyelem(instances, itemgetter('state'))]
         else:
             grouped_instances = [instances]
 
@@ -152,16 +152,13 @@ class CustomerPortal(portal.CustomerPortal):
         values = self._prepare_instances_values(quotation_page=True, **kwargs)
         return request.render("instance_request_portal.portal_my_instances", values)
 
-    @http.route(['/my/instances/form'], type='http', auth="user", website=True)
-    def portal_my_instances_form(self, **post):
-        #return request.render("instance_request_portal.portal_my_instances_form")
-        print(">>>>>>>>>>>>>>>>>> Instance <<<<<<<<<<<<<<<<<<<<<<<<")
-        if post:
-            instance = post["instance"]
+    @http.route('/my/instances/create', auth='public', website=True)
+    def create_instance(self, **kw):
+        return http.request.render('instance_request_portal.create_instance', {})
 
+    @http.route('/my/instances/create_request', auth='public', website=True)
+    def create_request(self, **kwargs):
+        request.env['instance.request'].sudo().create(kwargs)
+        values = self._prepare_instances_values(quotation_page=True, **kwargs)
+        return http.request.render('instance_request_portal.portal_my_instances', values)
 
-    # @http.route('/my/instances/<model("instance_request.instance_request"):obj>', type='http', auth="user", website=True)
-    # def portal_my_instances_form_view(self, obj, **kw):
-    #     return request.render('instance_request_portal.portal_my_instances_form_view', {
-    #         'instance': obj
-    #     })
