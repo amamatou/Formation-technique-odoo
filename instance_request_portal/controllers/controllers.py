@@ -162,3 +162,44 @@ class CustomerPortal(portal.CustomerPortal):
         values = self._prepare_instances_values(quotation_page=True, **kwargs)
         return http.request.render('instance_request_portal.portal_my_instances', values)
 
+    # @http.route(["/my/instances/<int:instance_id>/<access_token>"], type='http', auth="user", website=True)
+    # def display_instance_form(self, instance_id=None):
+    #     instance = request.env['instance.request'].sudo().search([('id', '=', instance_id)], limit=1)
+    #     # print(instance.name)
+    #     return http.request.render('instance_request_portal.display_instance_form_view', {
+    #         'instance': instance,
+    #         'instance_id': instance_id,
+    #     })
+
+    @http.route(['/my/instances/<model("instance.request"):instance_id>'], type='http', auth='public', website=True)
+    def display_instance_form(self,instance_id, **kwargs):
+        values = {'instance': instance_id, 'page_name':'instances_form_view'}
+        return http.request.render('instance_request_portal.display_instance_form_view', values)
+    @http.route(['/my/instances/update/<int:instance_id>', '/my/instances/update/'],
+                auth='public', website=True)
+    def update_request(self, instance_id=None, **kwargs):
+        data = {
+            'limit_date': kwargs.get('limit_date'),
+            'ram': kwargs.get('ram'),
+            'url': kwargs.get('url'),
+            'disk': kwargs.get('disk'),
+        }
+        request.env['instance.request'].sudo().browse(instance_id).write(data)
+        create_id = request.env.context.get('uid')
+        instances = http.request.env['instance.request'].search([('create_uid', '=', create_id)])
+        return http.request.render('instance_request_portal.portal_my_instances', {
+            'instances': instances,
+        })
+
+    @http.route(['/my/instances/delete/<int:instance_id>'],
+                auth='public', website=True)
+    def delete_request(self, instance_id=None, **kw):
+        request.env['instance.request'].sudo().browse(instance_id).unlink()
+        print('deleting succeeded')
+
+        create_id = request.env.context.get('uid')
+        instances = http.request.env['instance.request'].search([('create_uid', '=', create_id)])
+        return http.request.render('instance_request_portal.portal_my_instances', {
+            'instances': instances,
+
+        })
