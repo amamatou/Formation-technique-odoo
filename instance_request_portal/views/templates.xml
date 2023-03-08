@@ -302,15 +302,14 @@
                                                     Update request
                                                     <input type="hidden" value="update" name="update"/>
                                                 </button>
-                                                <a t-attf-href="/my/instances/delete/#{instance.id}"
-                                                   style="margin-left: 0.5cm">
-                                                    <button class="btn btn-primary"
-                                                            name="delete" t-att-value="instance.id">
-                                                        Delete request
-                                                    </button>
-                                                </a>
                                             </div>
                                         </form>
+                                        <br/>
+                                        <a t-attf-href="/my/instances/delete/#{instance.id}">
+                                            <button class="btn btn-primary" name="delete" t-att-value="instance.id">
+                                                Delete request
+                                            </button>
+                                        </a>
                                     </div>
                                 </div>
                                 <div class="col-12 col-md-6" name="portal_my_task_second_column"/>
