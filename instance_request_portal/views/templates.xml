@@ -38,6 +38,12 @@
                         </button>
                     </a>
                 </span>
+                <li t-if="page_name == 'instances_form_view'" class="breadcrumb-item">
+                    <a href="/my/instances">Instances</a>
+                </li>
+                <li t-if="page_name == 'instances_form_view'" class="breadcrumb-item">
+                    Instance
+                </li>
             </xpath>
         </template>
 
@@ -53,7 +59,7 @@
                             <h1>Create instance</h1>
                         </div>
                     </section>
-                    <br></br>
+                    <br/>
                     <div class="oe_structure">
                         <div class="container">
                             <div class="div1" style="display: inine-block">
@@ -65,31 +71,31 @@
                                         <label for="url">URL</label>
                                         <input class="form-control" style="width : 13cm" name="url"/>
                                     </div>
-                                    <br></br>
+                                    <br/>
                                     <div class="form-group">
                                         <label for="cpu">CPU</label>
                                         <input class="form-control" type="text" style="width : 13cm" name="cpu"/>
                                     </div>
-                                    <br></br>
+                                    <br/>
                                     <div class="form-group">
                                         <label for="ram">RAM</label>
                                         <input class="form-control" type="text" style="width : 13cm" name="ram"/>
                                     </div>
-                                    <br></br>
+                                    <br/>
                                     <div class="form-group">
-                                        <label for="disk">DISK</label>
+                                        <label for="disk">Disk</label>
                                         <input class="form-control" type="text" style="width : 13cm" name="disk"/>
                                     </div>
-                                    <br></br>
+                                    <br/>
                                     <div class="form-group">
                                         <label for="limit_date">Limit Date</label>
                                         <input class="form-control" type="date" style="width : 13cm" name="limit_date"/>
                                     </div>
-                                    <br></br>
+                                    <br/>
                                     <div class="clearfix oe_login_buttons">
                                         <button type="submit" class="btn btn-primary pull-left">Create Instance</button>
                                     </div>
-                                    <br></br>
+                                    <br/>
                                 </form>
                                 <div class="div2" style="position: inline-block">
                                 </div>
@@ -99,7 +105,6 @@
                 </div>
             </t>
         </template>
-
 
         <template id="portal_my_instances" name="My Instances">
             <t t-call="portal.portal_layout">
@@ -115,7 +120,9 @@
                             <th class="text-center">Customer</th>
                             <th class="text-center">Odoo Version</th>
                             <th class="text-center">Limit date</th>
+                            <th class="text-center">RAM</th>
                             <th class="text-center">URL</th>
+                            <th class="text-center">Disk</th>
                             <th class="text-center">State</th>
                         </tr>
                     </thead>
@@ -148,7 +155,13 @@
                                     <span t-field="instance.limit_date"/>
                                 </td>
                                 <td class="text-center">
+                                    <span t-field="instance.ram"/>
+                                </td>
+                                <td class="text-center">
                                     <span t-field="instance.url"/>
+                                </td>
+                                <td class="text-center">
+                                    <span t-field="instance.disk"/>
                                 </td>
                                 <td class="text-center">
                                     <span t-field="instance.sudo().state"/>
@@ -164,175 +177,359 @@
         <template id="portal_my_instances_form_view" name="My instance" inherit_id="portal.portal_sidebar">
             <xpath expr="//div[hasclass('o_portal_sidebar')]" position="inside">
                 <t t-if="page_name == 'instances_form_view'">
-                    <p t-out="instance.name"/>
-                    <p t-out="instance.create_uid"/>
-                    <p t-out="instance.partner_id"/>
-                    <p t-out="instance.odoo_version_id"/>
-                    <p t-out="instance.limit_date"/>
-                    <p t-out="instance.url"/>
-                    <p t-out="instance.state"/>
-                </t>
-            </xpath>
-        </template>
-
-        <template name="My instance" id="display_instance_form_view" inherit_id="portal.portal_sidebar"
-                  primary="True">
-            <xpath expr="//div[hasclass('o_portal_sidebar')]" position="inside">
-                <t t-if="page_name == 'instances_form_view'">
-                    <t t-foreach="instances" t-as="instance">
-                        <t t-set="o_portal_fullwidth_alert">
-                            <t t-call="portal.portal_back_in_edit_mode">
-                                <!--  <t t-set="backend_url"
-                                     t-value="'/web#model=project.task&amp;id=%s&amp;action=%s&amp;view_type=form' % (task.id, task.env.ref('project.action_view_all_task').id)"/>-->
+                    <!--<div class="row mt16 o_project_portal_sidebar">
+                        <t t-call="portal.portal_record_sidebar">
+                            <t t-set="classes" t-value="'col-lg-3 d-print-none'"/>
+                            <t t-set="entries">
+                                <ul class="list-group list-group-flush flex-wrap flex-row flex-lg-column">
+                                    <li id="task-nav"
+                                        class="list-group-item ps-0 flex-grow-1 d-flex align-items-center"
+                                        t-ignore="true"
+                                        role="complementary">
+                                        <ul class="nav flex-column">
+                                            <li class="nav-item" id="nav-header">
+                                                <a class="nav-link ps-3" href="/my/instances/create"
+                                                   style="max-width: 200px;">
+                                                    My request
+                                                </a>
+                                            </li>
+                                            <li class="nav-item" id="nav-chat">
+                                                <a class="nav-link ps-3" href="#task_chat">
+                                                    History
+                                                    <t t-filed="instance.name"/>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    &lt;!&ndash;<center>
+                                        <div class="btn-group flex-grow-1 mb-1" style="width: 5cm">
+                                            <a class="btn btn-secondary o_print_btn o_portal_invoice_print"
+                                               t-attf-href="/my/instances/createpdf/#{instance.id}/download"
+                                               id="instance_report" title="Print" target="_blank">
+                                                <i class="fa fa-print"/>
+                                                Print
+                                            </a>
+                                        </div>
+                                    </center>&ndash;&gt;
+                                </ul>
                             </t>
                         </t>
-                        <div class="row mt16 o_project_portal_sidebar">
-                            <t t-call="portal.portal_record_sidebar">
-                                <t t-set="classes" t-value="'col-lg-3 d-print-none'"/>
-                                <t t-set="entries">
-                                    <ul class="list-group list-group-flush flex-wrap flex-row flex-lg-column">
-                                        <li id="task-nav"
-                                            class="list-group-item ps-0 flex-grow-1 d-flex align-items-center"
-                                            t-ignore="true"
-                                            role="complementary">
-                                            <ul class="nav flex-column">
-                                                <li class="nav-item" id="nav-header">
-                                                    <a class="nav-link ps-3" href="/my/instances/create"
-                                                       style="max-width: 200px;">
-                                                        My request
-                                                    </a>
-                                                </li>
-                                                <li class="nav-item" id="nav-chat">
-                                                    <a class="nav-link ps-3" href="#task_chat">
-                                                        History
-                                                        <t t-filed="instance.name"/>
-                                                    </a>
-                                                </li>
-                                            </ul>
-                                        </li>
-                                        <!--                                   <center><div class="btn-group flex-grow-1 mb-1" style="width: 5cm">-->
-                                        <!--                                        <a class="btn btn-secondary o_print_btn o_portal_invoice_print"-->
-                                        <!--                                           t-attf-href="/my/instances/createpdf/#{instance.id}/download"-->
-                                        <!--                                           id="instance_report" title="Print" target="_blank">-->
-                                        <!--                                            <i class="fa fa-print"/>-->
-                                        <!--                                            Print-->
-                                        <!--                                        </a>-->
-                                        <!--                                    </div> </center>-->
-                                    </ul>
-                                </t>
-                            </t>
-                        </div>
-                        <div id="task_content" class="col-lg-9 justify-content-end">
-                            <div id="card" class="card">
-                                <div id="card_header" class="card-header bg-white" data-anchor="true">
-                                    <div class="row g-0">
-                                        <div class="col-12">
-                                            <h5 class="d-flex mb-1 mb-md-0 row">
-                                                <div class="col-9">
-                                                    <span t-field="instance.name" class="text-truncate"/>
-                                                    <small class="text-muted d-none d-md-inline">(#
-                                                        <span t-field="instance.id"/>
-                                                        )
-                                                    </small>
-                                                    <a t-attf-href="/my/instances/delete/#{instance.id}"
-                                                       style="margin-left: 0.5cm">
-                                                        <button class="btn btn-primary"
-                                                                name="delete" t-att-value="instance.id">
-                                                            Delete request
-                                                        </button>
-                                                    </a>
-                                                </div>
+                    </div>-->
+                    <div id="task_content" class="col-lg-9 justify-content-end">
+                        <div id="card" class="card">
+                            <div id="card_header" class="card-header bg-white" data-anchor="true">
+                                <div class="row g-0">
+                                    <div class="col-12">
+                                        <h5 class="d-flex mb-1 mb-md-0 row">
+                                            <div class="col-9">
+                                                <span t-field="instance.name" class="text-truncate"/>
+                                                <small class="text-muted d-none d-md-inline">(#
+                                                    <span t-field="instance.id"/>
+                                                    )
+                                                </small>
+                                            </div>
 
-                                                <div class="col-3 text-end">
-
-                                                    <small class="text-end">State :</small>
-                                                    <span t-field="instance.state"
-                                                          class=" badge rounded-pill text-bg-info"
-                                                          title="Current state of this request"/>
-                                                </div>
-                                            </h5>
-
-                                        </div>
+                                            <div class="col-3 text-end">
+                                                <small class="text-end">State :</small>
+                                                <span t-field="instance.state"
+                                                      class=" badge rounded-pill text-bg-info"
+                                                      title="Current state of this request"/>
+                                            </div>
+                                        </h5>
                                     </div>
                                 </div>
-                                <div id="card_body" class="card-body">
-                                    <div class="float-end">
-                                        <!--  <t t-call="project.portal_my_tasks_state_widget_template">
-                                          </t> -->
-                                    </div>
-                                    <div class="row mb-4 container">
-                                        <div class="col-12 col-md-6">
-                                            <form t-attf-action="/my/instances/update/#{instance.id}" method="post">
-                                                <input type="hidden" name="csrf_token"
-                                                       t-att-value="request.csrf_token()"/>
-                                                <div>
-                                                    <strong>LIMIT DATE :</strong>
-                                                    <input type="date" t-att-value="instance.limit_date"
-                                                           name="limit_date"/>
-                                                </div>
-                                                <br></br>
-                                                <div>
-                                                    <strong>RAM :</strong>
-                                                    <input type="text" t-att-value="instance.ram" name="ram"/>
-                                                </div>
-                                                <br></br>
-
-                                                <div>
-                                                    <strong>URL :</strong>
-                                                    <input type="text" t-att-value="instance.url" name="url"/>
-
-                                                </div>
-                                                <br></br>
-
-                                                <div>
-                                                    <strong>TL :</strong>
-                                                    <span t-field="instance.tl_id"/>
-
-                                                </div>
-                                                <br></br>
-
-                                                <div>
-                                                    <strong>DISK :</strong>
-                                                    <input type="text" t-att-value="instance.disk" name="disk"
-                                                           placeholder=""/>
-
-                                                </div>
-                                                <br></br>
-                                                <div class="clearfix oe_login_buttons">
-
-                                                    <button type="submit" class="btn btn-primary pull-left"
-                                                            name="update">
-                                                        Update request
-                                                        <input type="hidden" value="update" name="update"/>
-
-                                                    </button>
-
-                                                </div>
-                                            </form>
-
-                                        </div>
-
-
-                                    </div>
-                                    <div class="col-12 col-md-6" name="portal_my_task_second_column"/>
-
-                                </div>
-
-
                             </div>
-                            <!-- <div class="o_portal_messages_container mt32" id="instance_chat" data-anchor="true">
-                                <h4>
-                                    <strong>Message and communication history</strong>
-                                </h4>
-                                <t t-call="portal.message_thread">
-                                    <t t-set="token" t-value="instance.id"/>
-                                    <t t-set="disable_composer" t-value="instance.state"/>
-                                </t>
-                            </div> -->
+                            <div id="card_body" class="card-body">
+                                <div class="row mb-4 container">
+                                    <div class="col-12 col-md-6">
+                                        <form t-attf-action="/my/instances/update/#{instance.id}" method="post">
+                                            <input type="hidden" name="csrf_token"
+                                                   t-att-value="request.csrf_token()"/>
+                                            <div>
+                                                <strong>LIMIT DATE :</strong>
+                                                <input type="date" t-att-value="instance.limit_date"
+                                                       name="limit_date"/>
+                                            </div>
+                                            <br/>
+                                            <div>
+                                                <strong>RAM :</strong>
+                                                <input type="text" t-att-value="instance.ram" name="ram"/>
+                                            </div>
+                                            <br/>
+                                            <div>
+                                                <strong>URL :</strong>
+                                                <input type="text" t-att-value="instance.url" name="url"/>
+                                            </div>
+                                            <br/>
+                                            <div>
+                                                <strong>Disk :</strong>
+                                                <input type="text" t-att-value="instance.disk" name="disk"
+                                                       placeholder=""/>
+
+                                            </div>
+                                            <br/>
+                                            <div>
+                                                <strong>Created By :</strong>
+                                                <span t-field="instance.create_uid"/>
+                                            </div>
+                                            <br/>
+                                            <div>
+                                                <strong>Customer :</strong>
+                                                <span t-field="instance.partner_id"/>
+                                            </div>
+                                            <br/>
+                                            <div>
+                                                <strong>Employee :</strong>
+                                                <span t-field="instance.tl_id"/>
+                                            </div>
+                                            <br/>
+                                            <div>
+                                                <strong>Odoo version :</strong>
+                                                <span t-field="instance.odoo_version_id"/>
+                                                <!--<select name="odoo_version_id" class="form-control">
+                                                    <option t-att-value="instance.odoo_version_id"><t t-out="instance.odoo_version_id.name"/></option>
+                                                    <t t-foreach="instance.odoo_version_ids" t-as="odoo_version">
+                                                        <t t-if="instance.odoo_version_id != odoo_version">
+                                                            <option t-att-value="odoo_version"><t t-out="odoo_version.name"/></option>
+                                                        </t>
+                                                    </t>
+                                                </select>-->
+                                            </div>
+                                            <br/>
+                                            <div class="clearfix oe_login_buttons">
+                                                <button type="submit" class="btn btn-primary pull-left"
+                                                        name="update">
+                                                    Update request
+                                                    <input type="hidden" value="update" name="update"/>
+                                                </button>
+                                                <a t-attf-href="/my/instances/delete/#{instance.id}"
+                                                   style="margin-left: 0.5cm">
+                                                    <button class="btn btn-primary"
+                                                            name="delete" t-att-value="instance.id">
+                                                        Delete request
+                                                    </button>
+                                                </a>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-6" name="portal_my_task_second_column"/>
+                            </div>
                         </div>
-                    </t>
+                    </div>
+                    <!--<div class="container py-5">
+                        <div class="row">
+                            <div class="col-lg-8">
+                                <div class="card mb-4">
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-sm-3">
+                                                <p class="mb-0">Designation</p>
+                                            </div>
+                                            <div class="col-sm-9">
+                                                <p t-out="instance.name" class="text-muted mb-0"/>
+                                            </div>
+                                        </div>
+                                        <hr/>
+                                        <div class="row">
+                                            <div class="col-sm-3">
+                                                <p class="mb-0">Created by</p>
+                                            </div>
+                                            <div class="col-sm-9">
+                                                <p t-out="instance.create_uid" class="text-muted mb-0"/>
+                                            </div>
+                                        </div>
+                                        <hr/>
+                                        <div class="row">
+                                            <div class="col-sm-3">
+                                                <p class="mb-0">Customer</p>
+                                            </div>
+                                            <div class="col-sm-9">
+                                                <p t-out="instance.partner_id" class="text-muted mb-0"/>
+                                            </div>
+                                        </div>
+                                        <hr/>
+                                        <div class="row">
+                                            <div class="col-sm-3">
+                                                <p class="mb-0">Odoo version</p>
+                                            </div>
+                                            <div class="col-sm-9">
+                                                <p t-out="instance.odoo_version_id" class="text-muted mb-0"/>
+                                            </div>
+                                        </div>
+                                        <hr/>
+                                        <div class="row">
+                                            <div class="col-sm-3">
+                                                <p class="mb-0">Limit date</p>
+                                            </div>
+                                            <div class="col-sm-9">
+                                                <p t-out="instance.limit_date" class="text-muted mb-0"/>
+                                            </div>
+                                        </div>
+                                        <hr/>
+                                        <div class="row">
+                                            <div class="col-sm-3">
+                                                <p class="mb-0">URL</p>
+                                            </div>
+                                            <div class="col-sm-9">
+                                                <p t-out="instance.url" class="text-muted mb-0"/>
+                                            </div>
+                                        </div>
+                                        <hr/>
+                                        <div class="row">
+                                            <div class="col-sm-3">
+                                                <p class="mb-0">State</p>
+                                            </div>
+                                            <div class="col-sm-9">
+                                                <p t-out="instance.state" class="text-muted mb-0"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>-->
                 </t>
             </xpath>
         </template>
+
+        <!-- <template name="My instance" id="display_instance_form_view" inherit_id="portal.portal_sidebar"
+                   primary="True">
+             <xpath expr="//div[hasclass('o_portal_sidebar')]" position="inside">
+                 <t t-if="page_name == 'instances_form_view'">
+                     <t t-foreach="instances" t-as="instance">
+                         <t t-set="o_portal_fullwidth_alert">
+                             <t t-call="portal.portal_back_in_edit_mode">
+                              </t>
+                         </t>
+                         <div class="row mt16 o_project_portal_sidebar">
+                             <t t-call="portal.portal_record_sidebar">
+                                 <t t-set="classes" t-value="'col-lg-3 d-print-none'"/>
+                                 <t t-set="entries">
+                                     <ul class="list-group list-group-flush flex-wrap flex-row flex-lg-column">
+                                         <li id="task-nav"
+                                             class="list-group-item ps-0 flex-grow-1 d-flex align-items-center"
+                                             t-ignore="true"
+                                             role="complementary">
+                                             <ul class="nav flex-column">
+                                                 <li class="nav-item" id="nav-header">
+                                                     <a class="nav-link ps-3" href="/my/instances/create"
+                                                        style="max-width: 200px;">
+                                                         My request
+                                                     </a>
+                                                 </li>
+                                                 <li class="nav-item" id="nav-chat">
+                                                     <a class="nav-link ps-3" href="#task_chat">
+                                                         History
+                                                         <t t-filed="instance.name"/>
+                                                     </a>
+                                                 </li>
+                                             </ul>
+                                         </li>
+                                     </ul>
+                                 </t>
+                             </t>
+                         </div>
+                         <div id="task_content" class="col-lg-9 justify-content-end">
+                             <div id="card" class="card">
+                                 <div id="card_header" class="card-header bg-white" data-anchor="true">
+                                     <div class="row g-0">
+                                         <div class="col-12">
+                                             <h5 class="d-flex mb-1 mb-md-0 row">
+                                                 <div class="col-9">
+                                                     <span t-field="instance.name" class="text-truncate"/>
+                                                     <small class="text-muted d-none d-md-inline">(#
+                                                         <span t-field="instance.id"/>
+                                                         )
+                                                     </small>
+                                                     <a t-attf-href="/my/instances/delete/#{instance.id}"
+                                                        style="margin-left: 0.5cm">
+                                                         <button class="btn btn-primary"
+                                                                 name="delete" t-att-value="instance.id">
+                                                             Delete request
+                                                         </button>
+                                                     </a>
+                                                 </div>
+
+                                                 <div class="col-3 text-end">
+
+                                                     <small class="text-end">State :</small>
+                                                     <span t-field="instance.state"
+                                                           class=" badge rounded-pill text-bg-info"
+                                                           title="Current state of this request"/>
+                                                 </div>
+                                             </h5>
+
+                                         </div>
+                                     </div>
+                                 </div>
+                                 <div id="card_body" class="card-body">
+                                     <div class="float-end">
+                                     </div>
+                                     <div class="row mb-4 container">
+                                         <div class="col-12 col-md-6">
+                                             <form t-attf-action="/my/instances/update/#{instance.id}" method="post">
+                                                 <input type="hidden" name="csrf_token"
+                                                        t-att-value="request.csrf_token()"/>
+                                                 <div>
+                                                     <strong>LIMIT DATE :</strong>
+                                                     <input type="date" t-att-value="instance.limit_date"
+                                                            name="limit_date"/>
+                                                 </div>
+                                                 <br></br>
+                                                 <div>
+                                                     <strong>RAM :</strong>
+                                                     <input type="text" t-att-value="instance.ram" name="ram"/>
+                                                 </div>
+                                                 <br></br>
+
+                                                 <div>
+                                                     <strong>URL :</strong>
+                                                     <input type="text" t-att-value="instance.url" name="url"/>
+
+                                                 </div>
+                                                 <br></br>
+
+                                                 <div>
+                                                     <strong>TL :</strong>
+                                                     <span t-field="instance.tl_id"/>
+
+                                                 </div>
+                                                 <br></br>
+
+                                                 <div>
+                                                     <strong>DISK :</strong>
+                                                     <input type="text" t-att-value="instance.disk" name="disk"
+                                                            placeholder=""/>
+
+                                                 </div>
+                                                 <br></br>
+                                                 <div class="clearfix oe_login_buttons">
+
+                                                     <button type="submit" class="btn btn-primary pull-left"
+                                                             name="update">
+                                                         Update request
+                                                         <input type="hidden" value="update" name="update"/>
+
+                                                     </button>
+
+                                                 </div>
+                                             </form>
+
+                                         </div>
+
+
+                                     </div>
+                                     <div class="col-12 col-md-6" name="portal_my_task_second_column"/>
+
+                                 </div>
+
+
+                             </div>
+                         </div>
+                     </t>
+                 </t>
+             </xpath>
+         </template>-->
     </data>
 </odoo>

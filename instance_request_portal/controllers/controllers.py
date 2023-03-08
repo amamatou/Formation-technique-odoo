@@ -174,7 +174,7 @@ class CustomerPortal(portal.CustomerPortal):
     @http.route(['/my/instances/<model("instance.request"):instance_id>'], type='http', auth='public', website=True)
     def display_instance_form(self,instance_id, **kwargs):
         values = {'instance': instance_id, 'page_name':'instances_form_view'}
-        return http.request.render('instance_request_portal.display_instance_form_view', values)
+        return http.request.render('instance_request_portal.portal_my_instances_form_view', values)
     @http.route(['/my/instances/update/<int:instance_id>', '/my/instances/update/'],
                 auth='public', website=True)
     def update_request(self, instance_id=None, **kwargs):
@@ -185,21 +185,25 @@ class CustomerPortal(portal.CustomerPortal):
             'disk': kwargs.get('disk'),
         }
         request.env['instance.request'].sudo().browse(instance_id).write(data)
-        create_id = request.env.context.get('uid')
-        instances = http.request.env['instance.request'].search([('create_uid', '=', create_id)])
-        return http.request.render('instance_request_portal.portal_my_instances', {
-            'instances': instances,
-        })
+        # create_id = request.env.context.get('uid')
+        # instances = http.request.env['instance.request'].search([('create_uid', '=', create_id)])
+        # return http.request.render('instance_request_portal.portal_my_instances', {
+        #     'instances': instances,
+        # })
+        values = self._prepare_instances_values(quotation_page=True, **kwargs)
+        return request.render("instance_request_portal.portal_my_instances", values)
 
     @http.route(['/my/instances/delete/<int:instance_id>'],
                 auth='public', website=True)
-    def delete_request(self, instance_id=None, **kw):
+    def delete_request(self, instance_id=None, **kwargs):
         request.env['instance.request'].sudo().browse(instance_id).unlink()
         print('deleting succeeded')
 
-        create_id = request.env.context.get('uid')
-        instances = http.request.env['instance.request'].search([('create_uid', '=', create_id)])
-        return http.request.render('instance_request_portal.portal_my_instances', {
-            'instances': instances,
-
-        })
+        # create_id = request.env.context.get('uid')
+        # instances = http.request.env['instance.request'].search([('create_uid', '=', create_id)])
+        # return http.request.render('instance_request_portal.portal_my_instances', {
+        #     'instances': instances,
+        #
+        # })
+        values = self._prepare_instances_values(quotation_page=True, **kwargs)
+        return request.render("instance_request_portal.portal_my_instances", values)
