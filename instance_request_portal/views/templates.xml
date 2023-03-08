@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <data>
         <record id="menu_instance_creation" model="website.menu">
@@ -124,6 +125,7 @@
                             <th class="text-center">URL</th>
                             <th class="text-center">Disk</th>
                             <th class="text-center">State</th>
+                            <th class="text-center">Actions</th>
                         </tr>
                     </thead>
                     <t t-foreach="grouped_instances" t-as="instances">
@@ -165,6 +167,13 @@
                                 </td>
                                 <td class="text-center">
                                     <span t-field="instance.sudo().state"/>
+                                </td>
+                                <td class="text-center">
+                                    <a t-attf-href="/my/instances/delete/#{instance.id}">
+                                        <button name="delete" t-att-value="instance.id" class="btn btn-sm btn-danger btn-floating">
+                                            <i class="fa fa-trash"/>
+                                        </button>
+                                    </a>
                                 </td>
                             </tr>
                         </tbody>

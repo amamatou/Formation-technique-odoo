@@ -76,6 +76,12 @@ class InstanceRequest(models.Model):
             record.state = 'submitted'
             self.activity_unlink(['instance_request.instance_request_to_process_activity'])
 
+    @api.model
+    def action_progress_rpc(self, vals):
+        self = self.browse(vals)
+        self.action_progress
+        return True
+
     def action_progress(self):
         for record in self:
             record.state = 'in_process'
