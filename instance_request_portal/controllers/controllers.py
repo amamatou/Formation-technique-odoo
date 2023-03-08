@@ -3,6 +3,7 @@
 
 import binascii
 from collections import OrderedDict
+from datetime import date, datetime
 
 from odoo import fields, http, SUPERUSER_ID, _
 from odoo.exceptions import AccessError, MissingError, ValidationError
@@ -17,6 +18,7 @@ from odoo.addons.portal.controllers.portal import pager as portal_pager
 from odoo.osv.expression import OR, AND
 from odoo.tools import groupby as groupbyelem
 from operator import itemgetter
+from odoo.exceptions import ValidationError
 
 
 class CustomerPortal(portal.CustomerPortal):
@@ -158,6 +160,11 @@ class CustomerPortal(portal.CustomerPortal):
 
     @http.route('/my/instances/create_request', auth='public', website=True)
     def create_request(self, **kwargs):
+        if kwargs.get('limit_date'):
+            my_limit_date = datetime.strptime(kwargs.get('limit_date'), '%Y-%m-%d').date()
+            #print(date.today(), my_limit_date)
+            if date.today() > my_limit_date:
+                raise ValidationError("You can't define a limit date before today !")
         request.env['instance.request'].sudo().create(kwargs)
         values = self._prepare_instances_values(quotation_page=True, **kwargs)
         return http.request.render('instance_request_portal.portal_my_instances', values)
