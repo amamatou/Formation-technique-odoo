@@ -4,6 +4,7 @@
 import binascii
 from collections import OrderedDict
 from datetime import date, datetime
+from pprint import pprint
 
 from odoo import fields, http, SUPERUSER_ID, _
 from odoo.exceptions import AccessError, MissingError, ValidationError
@@ -18,7 +19,7 @@ from odoo.addons.portal.controllers.portal import pager as portal_pager
 from odoo.osv.expression import OR, AND
 from odoo.tools import groupby as groupbyelem
 from operator import itemgetter
-from odoo.exceptions import ValidationError
+from odoo.exceptions import ValidationError, Warning
 
 
 class CustomerPortal(portal.CustomerPortal):
@@ -28,7 +29,8 @@ class CustomerPortal(portal.CustomerPortal):
 
         InstanceRequest = request.env['instance.request']
         if 'instances_count' in counters:
-            values['instances_count'] = InstanceRequest.search_count([('create_uid', '=', request.env.user.id)]) \
+            # values['instances_count'] = InstanceRequest.search_count([('create_uid', '=', request.env.user.id)]) \
+            values['instances_count'] = InstanceRequest.search_count([]) \
                 if InstanceRequest.check_access_rights('read', raise_exception=False) else 0
 
         return values
@@ -156,17 +158,37 @@ class CustomerPortal(portal.CustomerPortal):
 
     @http.route('/my/instances/create', auth='public', website=True)
     def create_instance(self, **kw):
-        return http.request.render('instance_request_portal.create_instance', {})
+        partner_ids = request.env['res.partner'].sudo().search([])
+        tl_ids = request.env['hr.employee'].sudo().search([])
+        odoo_version_ids = request.env['odoo.version'].sudo().search([])
+
+        values = {'partners': partner_ids, 'employees': tl_ids, 'odoo_versions': odoo_version_ids}
+
+        return http.request.render('instance_request_portal.create_instance', values)
 
     @http.route('/my/instances/create_request', auth='public', website=True)
     def create_request(self, **kwargs):
         if kwargs.get('limit_date'):
             my_limit_date = datetime.strptime(kwargs.get('limit_date'), '%Y-%m-%d').date()
-            #print(date.today(), my_limit_date)
+            # print(date.today(), my_limit_date)
+            # myerror = MissingError(
+            #     _('Where is my restatad')
+            # )
             if date.today() > my_limit_date:
-                raise ValidationError("You can't define a limit date before today !")
+                # raise ValidationError("You can't define a limit date before today !")
+                # raise Warning("You can't define a limit date before today !")
+                return http.request.render('instance_request_portal.create_instance', {'show_alert ': True})
+
+        partner = request.env['res.partner'].sudo().browse(int(kwargs.get('partner_id')))
+        employee = request.env['hr.employee'].sudo().browse(int(kwargs.get('tl_id')))
+        odoo_version = request.env['odoo.version'].sudo().browse(int(kwargs.get('odoo_version_id')))
+        print(kwargs)
+
+        kwargs.update({'partner_id': partner.id, 'tl_id': employee.id, 'odoo_version_id': odoo_version.id})
         request.env['instance.request'].sudo().create(kwargs)
-        values = self._prepare_instances_values(quotation_page=True, **kwargs)
+
+        values = self._prepare_instances_values(quotation_page=True, **kwargs )
+        values['show_alert'] = False
         return http.request.render('instance_request_portal.portal_my_instances', values)
 
     # @http.route(["/my/instances/<int:instance_id>/<access_token>"], type='http', auth="user", website=True)
@@ -180,7 +202,12 @@ class CustomerPortal(portal.CustomerPortal):
 
     @http.route(['/my/instances/<model("instance.request"):instance_id>'], type='http', auth='public', website=True)
     def display_instance_form(self, instance_id, **kwargs):
-        values = {'instance': instance_id, 'page_name': 'instances_form_view'}
+        partner_ids = request.env['res.partner'].sudo().search([])
+        tl_ids = request.env['hr.employee'].sudo().search([])
+        odoo_version_ids = request.env['odoo.version'].sudo().search([])
+        values = {'instance': instance_id, 'page_name': 'instances_form_view', 'partners': partner_ids,
+                  'employees': tl_ids, 'odoo_versions': odoo_version_ids}
+        #pprint(values)
         return http.request.render('instance_request_portal.portal_my_instances_form_view', values)
 
     @http.route(['/my/instances/update/<int:instance_id>', '/my/instances/update/'], auth='public', website=True)
@@ -191,6 +218,13 @@ class CustomerPortal(portal.CustomerPortal):
             'url': kwargs.get('url'),
             'disk': kwargs.get('disk'),
         }
+        partner = request.env['res.partner'].sudo().browse(int(kwargs.get('partner_id')))
+        employee = request.env['hr.employee'].sudo().browse(int(kwargs.get('tl_id')))
+        odoo_version = request.env['odoo.version'].sudo().browse(int(kwargs.get('odoo_version_id')))
+
+        data.update({'partner_id': partner.id, 'tl_id': employee.id, 'odoo_version_id': odoo_version.id})
+
+        #print(data)
         request.env['instance.request'].sudo().browse(instance_id).write(data)
         # create_id = request.env.context.get('uid')
         # instances = http.request.env['instance.request'].search([('create_uid', '=', create_id)])

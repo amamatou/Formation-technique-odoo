@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+        <!--  Javascript -->
+        <template id="assets_backend" name="javascript assets"
+                  inherit_id="web.assets_backend" priority="20">
+            <xpath expr="." position="inside">
+                <script type="text/javascript" src="/instance_request_portal/static/src/js/validation_form.js"/>
+            </xpath>
+        </template>
+</odoo>
